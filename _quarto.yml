@@ -9,21 +9,17 @@ book:
   chapters:
     - index.qmd
     - linregressie.qmd
+    - diagnoses.qmd
     - voorbeelden.qmd
     - catregressie.qmd
     - correlatie.qmd
     - logitregressie.qmd
-    - part: "Oefeningen"
-      chapters: 
-        - adult.qmd
-        - smarket.qmd
   appendices: 
-    - diagnoses.qmd
     - overfitting.qmd
     - voorwaarden.qmd
     - referenties.qmd
 
-bibliography: referenties.bib
+bibliography: regressie.bib
 nocite: |
   @*
 

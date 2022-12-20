@@ -10,7 +10,7 @@ Bron: [Learning Data Science: Modelling Basics](https://blog.ephorie.de/learning
 
 Bij data science gaat het vaak om het maken van goede modellen. Bijvoorbeeld, kun je op basis van iemands leeftijd zijn maandsalaris voorspellen? Hierbij een voorbeeld met gefingeerde data. In dit model is `leeftijd` de onafhankelijke variabele en `salaris` de afhankelijke variabele.
 
-Zie ook Excel bestand: resources/leeftijd-inkomen.xlsx
+Zie ook Excel bestand: [leeftijd-inkomen.xlsx](resources/leeftijd-inkomen.xlsx)
 
 ```{r}
 #| label: fig-fitting

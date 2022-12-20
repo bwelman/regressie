@@ -27,9 +27,9 @@ De residuen zijn onafhankelijk van elkaar (geen autocorrelatie).
 
 Er mag geen patroon zitten in opeenvolgende waarden van de residuen. Dit is eigenlijk alleen maar relevant bij het werken met tijdreeksen, waar je immers met opeenvolgende waarden te maken hebt.
 
-Je kunt dit het eenvoudigst beoordelen door een residuendiagram te beoordelen. Er bestaan formele toetsen voor deze voorwaarde zoals de [Durbin-Watson test](https://en.wikipedia.org/wiki/Durbin%E2%80%93Watson_statistic).
+Je kunt dit het eenvoudigst beoordelen door een residuendiagram te beoordelen. Er bestaan formele toetsen voor deze voorwaarde zoals de Durbin-Watson test (zie @sec-diagnoses)
 
-Wanneer er sprake is van autocorrelatie kun je "differencing" toepassen.
+Wanneer er sprake is van autocorrelatie kun je de gegevens differentieren.
 
 ## Homoscedasticiteit {.unnumbered}
 
@@ -62,12 +62,12 @@ Wanneer niet aan deze voorwaarde voldaan wordt kun je het volgende doen:
 -   Ga na of er uitschieters zijn met een grote impact op de verdeling. Zoja, onderzoek dan of dit wil echte waarden zijn en geen foute invoerwaarden.
 -   Pas een transformatie toe op $x$ of $y$. Veel gebruikte transformaties zijn: logaritme, vierkantswortel, reciproke.
 
-## Verbetertips
+## Verbetertips {.unnumbered}
 
-1. Als de gegevens niet lineair gedrag vertonen kun je de onafhankelijke variabelen transformeren met wortel, kwadraat, logaritme.
+1.  Als de gegevens niet lineair gedrag vertonen kun je de onafhankelijke variabelen transformeren met wortel, kwadraat, logaritme.
 
-2. Als de gegevens lijden aan heteroskedasticiteit, transformeer dan de afhankelijke variabele met behulp van wortel, kwadraat, logaritme, enz. je kunt ook de gewogen kleinste-kwadratenmethode gebruiken om dit probleem aan te pakken.
+2.  Als de gegevens lijden aan heteroskedasticiteit, transformeer dan de afhankelijke variabele met behulp van wortel, kwadraat, logaritme, enz. je kunt ook de gewogen kleinste-kwadratenmethode gebruiken om dit probleem aan te pakken.
 
 3.  Als de gegevens multicollineariteit vertonen, gebruik dan een correlatiematrix om gecorreleerde variabelen te controleren. Laten we zeggen dat variabelen A en B sterk gecorreleerd zijn. Gebruik nu deze benadering in plaats van er één te verwijderen: zoek de gemiddelde correlatie van A en B met de rest van de variabelen. Welke variabele het hoogste gemiddelde heeft in vergelijking met andere variabelen, verwijder deze. Als alternatief kun je bestrafte regressiemethoden gebruiken, zoals lasso, ridge, elastic net, enz.
 
-4.  je kunt variabelen selecteren op basis van p-waarden. Als een variabele een p-waarde > 0,05 vertoont, kun je die variabele uit het model verwijderen, omdat we bij p> 0,05 altijd de nulhypothese niet verwerpen.
+4.  je kunt variabelen selecteren op basis van p-waarden. Als een variabele een p-waarde \> 0,05 vertoont, kun je die variabele uit het model verwijderen, omdat we bij p\> 0,05 altijd de nulhypothese niet verwerpen.

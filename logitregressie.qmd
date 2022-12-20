@@ -26,8 +26,7 @@ In @fig-wisslaagkans zie je het verband tussen het aantal minuten dat je aan hui
 
 De kans om voor de wiskunde toets te slagen is aanvankelijk nogal laag, die zit heel dicht bij nul. Dus als je heel weinig tijd aan je huiswerk besteed dan slaag je niet voor deze wiskundetoets. Die slaagkans gaat bij ca. 30 min. huiswerk stijgen en vanaf 40 min zie je de slaagkans vrij lineair en snel omhoog gaan totdat je ongeveer bij 70 min. bent en dan is de kans dat je die wiskundetoets haalt bijna gelijk aan 100%. Dit is de beroemde *S-curve* vanwege de vorm.
 
-::: {#fig-wiskunde-huiswerktijd layout-ncol=2}
-
+::: {#fig-wiskunde-huiswerktijd layout-ncol="2"}
 ![Slaagkans Wiskunde - huiswerktijd](images/huiswerk-slaagkans.png){#fig-wisslaagkans}
 
 ![Slaagkans Wiskunde - huiswerktijd met lineaire trendlijn](images/huiswerk-slaagkans-trendlijn.png){#fig-wisslaagkanstrendlijn}
@@ -50,17 +49,17 @@ Bij de logistische regressie wordt een speciale kanscurve gebruikt, waarbij de g
 -   0 = toets niet gehaald
 -   1 = toets wel gehaald
 
-De uitkomst van een logistische regressie is niet direct de categoriewaarde (hier wel of niet), maar de kans op een bepaalde categoriewaarde. Deze kans ligt tussen 0 en 1. Het is aan de onderzoeker om op basis van die kans aan te geven in welke categorie de waarneming valt, dus wat het omkeerpunt van de kans voor categorie 0 of categorie 1 is. Standaard is deze kans 50%, dus p=0,50.
+De uitkomst van een logistische regressie is niet direct de categoriewaarde (hier 0 of 1), maar de kans op een bepaalde categoriewaarde. Deze kans ligt tussen 0 en 1. Het is aan de onderzoeker om op basis van die kans aan te geven in welke categorie de waarneming valt, dus wat het omkeerpunt van de kans voor categorie 0 of categorie 1 is. Standaard ligt het omslagpunt bij een kans van 50%.
 
-Het logistische model gaat dus uit van kansen en eigenlijk meer van kansverhoudingen: **odds**
+Het logistische model gaat uit van kansverhoudingen: **odds**
 
 In het voorbeeld is $\text{odds} = \frac{p_{wel}} {p_{niet}} = \frac{p_{wel}} {1 - p_{wel}}$
 
 $p_{wel}$ heeft een bereik van $[0, 1]$ waardoor de odds een bereik heeft van $[0, \infty]$.
 
-Omdat er liever niet gewerkt wordt met een variabele die naar oneindig loopt, wordt de natuurlijke logaritme van de odds genomen. Deze wordt de **log odds** of **logit** genoemd.
+Omdat het niet handig is te werken met een variabele die naar oneindig loopt, wordt de natuurlijke logaritme van de odds genomen. Deze wordt de **log odds** of **logit** genoemd.
 
-Wanneer de onafhankelijke variabelen $X_1, X_2, X_3, ...$ zijn dan heeft het logistische model de volgende vorm:
+Wanneer de onafhankelijke variabelen $X_1, X_2, X_3, ...$ zijn, dan heeft het logistische model de volgende vorm:
 
 $$ln(odds) = ln(\frac{p_{wel}} {p_{niet}}) = b_0 + b_1X_1 + b_2X_2 + ...$$
 
