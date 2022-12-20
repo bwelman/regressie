@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+_bookdown_files/
+_book/
+
+/.quarto/
+_freeze/

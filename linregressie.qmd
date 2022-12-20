@@ -1,0 +1,456 @@
+# Lineaire Regressie {#linregressie}
+
+```{r}
+#| results: "asis"
+#| echo: false
+source("_common.R")
+```
+
+Lineaire regressie is een methode voor het voorspellen van de waarde van een continue variabele. Hierbij wordt een lineair verband tussen de uitkomst en de voorspellende variabelen verondersteld.
+
+**Enkelvoudige lineaire regressie**
+
+Dit is een model met 1 voorspellende variabele:
+
+$y = b_0 + b_1x_1 + \epsilon$
+
+**Meervoudige lineaire regressie**
+
+Dit is een model met 2 of meer voorspellende variabelen:
+
+$y = b_0 + b_1x_1 + b_2x_2 + ... \epsilon$
+
+met
+
+-   $b_0$: is de constante (intercept, as-afsnede), dit is de waarde voor $y$ voor alle $x_i=0$.
+-   $b_1, b_2, ...$: zijn de **richtingscoëfficienten**, welke de verandering meten van $x_i$ m.b.t. de verandering van $y$.
+-   $\epsilon$ is de fout, het **residu** welke het verschil tussen de werkelijke waarde en de voorspelde waarde aangeeft. En dus de invloed van andere factoren op de variabele $y$.
+
+::: callout-note
+In sommige situaties kan er een **interactie-effect** zijn tussen de voorspellende variabelen.
+:::
+
+Je kunt niet de foutterm volledig elimineren, maar wel proberen deze zo klein mogelijk te maken. De hiervoor gebruikte techniek staat bekend als *Ordinary Least Square (OLS)*, ofwel de *Kleinste Kwadraten Methode*. Via deze metho wordt geprobeerd om de best mogelijke waarden voor de parameters te vinden door de som van de kwadratische residuen te minimaliseren.
+
+Een uitleg van de methode wordt gedaan aan de hand van de dataset `marketing`, afkomstig het boek "Machine Learning Essentials with R" [@kassambaraMachineLearningEssentials2018]
+
+## Data
+
+De dataset `marketing`, afkomstig uit package `datarium`, bevat de impact van drie advertentiemedia (`youtube`, `facebook` en `newspaper`) op de verkopen (`sales`). Het doel is het voorspellen van de verkopen op basis van de hoeveelheid geld (in duizenden dollars) die aan de drie advertentiemedia wordt uitgegeven.
+
+**Variabelen**
+
+-   uitkomstvariabele
+    -   `sales`
+-   voorspelvariabelen
+    -   `youtube`
+    -   `facebook`
+    -   `newspaper`
+
+```{r}
+#| label: marketing-data
+data("marketing", package = "datarium")
+head(marketing)
+```
+
+**Correlaties**
+
+Om te zien of de aannames van het lineaire model geschikt zijn voor de beschikbare gegevens, worden de correlaties tussen de variabelen bekeken: een scatterplot en de correlatiecoëfficienten.
+
+```{r}
+#| label: fig-marketing-correlaties
+#| fig-cap: "Correlaties tussen de variabelen."
+plot(marketing)
+cor(marketing)
+```
+
+Lineaire regressie veronderstelt een lineair verband tussen de uitkomstvariabele en de voorspelvariabele(n). De grafieken van `sales` tegen `youtube` en `facebook` tonen een stijgend lineair verband. Die tegen `newspaper` toont geen lineair verband. Vooralsnog wordt `newspaper` in het model meegenomen.
+
+Het doel is om een wiskundige formule te maken die `sales` definieert als functie van `youtube`, `facebook` en `newspaper`. Het regressiemodel wordt dan
+
+$sales = b_0 + b_1*youtube + b_2*facebook + b_3*newspaper$
+
+De workflow wordt nu
+
+1.  Splits de gegevens willekeurig in een trainingsset (80%) en een testset (20%).
+2.  Maak een regressiemodel met de trainingsset. Beoordeel het model en pas het eventueel aan.
+3.  Maak met het regressiemodel voorspellingen voor de testset en bereken de nauwkeurigheid van de voorspellingen.
+
+## Splitsing data
+
+```{r}
+#| label: marketing-datasplitsing
+set.seed(123)
+trainRijnummers <- createDataPartition(y = marketing$sales, p=0.8, list = FALSE)
+trainData <- marketing[trainRijnummers, ]
+testData <- marketing[-trainRijnummers, ]
+```
+
+Voor de `trainData` met `r nrow(trainData)` waarnemingen wordt vervolgens een lineair regressiemodel gemaakt.
+
+## Regressiemodel
+
+Voor het bepalen van een lineair regressiemodel voor `trainData` wordt de R-functie `lm()` gebruikt. Via de kleinste kwadraten methode worden de coëfficienten van de regressievergelijking bepaald.
+
+Daarna wordt een t-test uitgevoerd om te controleren of deze coëfficiënten significant verschillen van nul. Wanneer een coëfficiënt niet nul is, dan is er een significant verband tussen de voorspelvariabele(n) $x$ en de uitkomstvariabele $y$.
+
+Syntax: `lm(formula, data, ...)` met
+
+-   *formula* - Dit is de modelformule, met de uitkomstvariabele aan de linkerkant van de tilde `~` en de voorspelvariabelen aan de rechterkant.
+-   *data* - Dataframe met de variabelen in het model.
+
+::: callout-note
+De syntax aan de rechterkant in de modelformule is volgens de *Wilkinson-Rogers* specificatie. Hierbij worden de volgende symbolen gebruikt.
+
+-   `+` om variabelen te combineren, bijvoorbeeld `var1 + var2`.
+-   `:` voor interacties tussen de voorspelvariabelen, bijvoorbeeld `var1:var2`.
+-   `*` voor zowel variabelen zelf als interacties daartussen, zo is bijvoorbeeld `var1*var2` hetzelfde als `var1 + var2 + var1:var2`.
+-   `.` indicatie voor *alle* voorspelvariabelen.
+
+In de modelformule mogen ook wiskundige functies voorkomen zoals bijvoorbeeld `log()` of `poly()`.
+:::
+
+```{r}
+#| label: marketing-model
+model <- lm(sales ~ ., data = trainData)
+model
+```
+
+De regressievergelijking wordt:
+
+$sales = 3.594 + 0.0446*youtube + 0.1888*facebook + 0.00284*newspaper$
+
+## Voorspellingen
+
+Voorspellingen kunnen gemaakt worden met de R-functie `predict`. Wanneer het object een lineair model is dan wordt op de achtergrond de functie `predict.lm` gebruikt.
+
+Syntax: `predict(object, newdata, ...)`
+
+-   `object`: een "lm" object
+-   `newdata`: een dataframe met de waarden voor de voorspelvariabelen waarvoor de waarde van de uitkomstvariabele geschat moet worden.
+
+Als voorbeeld de voorspelling van `sales` wanneer 1000 in alledrie de media geïnvesteerd wordt.
+
+```{r}
+#| label: marketing-scen1
+scenario1 <- data.frame(youtube = 1000, facebook = 1000, newspaper = 1000)
+predict(object = model, newdata = scenario1)
+```
+
+Je kunt ook meerdere voorspellingen tegelijk maken:
+
+```{r}
+#| label: marketing-scen2
+scenario2 <- data.frame(youtube = c(1000, 2000), 
+                      facebook = c(1000, 1500), 
+                      newspaper = c(1000, 500))
+predict(object = model, newdata = scenario2)
+```
+
+## Beoordeling model
+
+Met `summary()` krijg je meer details over het model:
+
+```{r}
+#| label: marketing-modelsummary
+summary(model)
+```
+
+-   *Residuals* : Geeft een overzicht van de verdeling van de residuen. Het gemiddelde hiervan moet nul zijn wat je kunt controleren met `mean(model$residuals)`: `r mean(model$residuals)`.
+
+-   *Coefficients* : De waarden van de coëfficienten in de regressievergelijking met bijbehorende statistieken.
+
+    -   `Estimate` : Geeft de waarde van de coëfficient.
+    -   `Std. Error` : Standaardfout van de coëfficient. Geeft nauwkeurigheid weer: hoe lager hoe beter
+    -   `t value` : Geeft de waarde van de coëfficient aan in termen van de standaardfout. t-waarde = Estimate / Std.Error
+    -   `Pr(>|t|)` : p-waarde voor de t-toets, die de significantie van de teststatistiek aangeeft. Hoe kleiner des te significanter (met sterren).
+
+De algehele kwaliteit van de lineaire regressiefit kan worden beoordeeld aan de hand van de volgende drie grootheden, weergegeven in het modeloverzicht:
+
+-   Residual Standard Error (RSE)
+-   R-squared ($R^2$) en adjusted R-squared
+-   F-statistic
+
+### Residual Standard Error (RSE)
+
+De RSE, die overeenkomt met de voorspellingsfout, vertegenwoordigt ruwweg het gemiddelde verschil tussen de waargenomen uitkomstwaarden en de voorspelde waarden door het model. De RSE wordt uitgedrukt in dezelfde eenheid als de uitkomstvariabele. Hoe lager de RSE, hoe beter het model bij onze gegevens past.
+
+$RSE = \frac{\sqrt{(\text{som residuen})^2}}{\text{aantal vrijheidsgraden}}$
+
+Als je de RSE deelt door de gemiddelde waarde van de uitkomstvariabele, krijg je het voorspellingsfoutpercentage, dat zo klein mogelijk moet zijn.
+
+::: callout-note
+In het voorbeeld is de RSE = 2,04, wat betekent dat de waargenomen waarden van `sales` gemiddeld ongeveer 2,04 eenheden afwijken van de voorspelde waarden.
+
+Dit komt overeen met een foutpercentage van 2,04/mean(trainData\$sales) = 2,04/16,9 = 12%, wat laag is.
+:::
+
+### R-squared en adjusted R-squared
+
+$R^2$, weergegeven als *R squared* in de uitvoer, geeft aan welk deel van de totale variantie verklaard wordt door het model.
+
+$R^2 = \frac{\text{Verklaarde variantie}} {\text{Totale variantie}}$
+
+De $R^2$ heeft een bereik van 0 tot 1. Voor modellen die goed bij de gegevens passen is de waarde nagenoeg 1. Voor modellen die slecht passen ligt de waarde dicht bij 0.
+
+Een probleem met de $R^2$ is dat deze toeneemt wanneer je meer onafhankelijke variabelen aan het model toevoegt, zelfs als de nieuw toegevoegde variabelen niet aan een verbetering van het model bijdragen. Een oplossing is om de $R^2$ aan te passen door rekening te houden met het aantal voorspellende variabelen. Dit doet de *Adjusted R Squared*, welke een correctie is voor het aantal voorspelvariabelen dat in het model is opgenomen.
+
+Om deze reden is het beter om de *Adjusted R Squared* als maatstaf te gebruiken, want deze neemt alleen toe wanneer de fout afneemt.
+
+Als er een aanzienlijk verschil is tussen *R squared* en *Adjusted R Squared*, geeft dit aan dat je kunt overwegen om het aantal kenmerken in het model te verkleinen.
+
+::: callout-note
+Voor het voorbeeld is de *Adjusted R Square* 0,893 wat een goede waarde is. Dus zo'n 89% van de variabiliteit in de uitkomsten wordt verklaard door het regressiemodel.
+:::
+
+### F-statistiek
+
+De F-statistic geeft de overall significantie van het model weer. Het is de verhouding tussen de verklaarde en onverklaarde variantie. Het beoordeelt of ten minste één voorspellende variabele een coëfficiënt heeft die niet nul is. Wanneer de p-waarde van F-statistic klein is dan houdt dat in minstens een van de voorspelvariabelen significant gerelateerd is aan de uitkomstvariabele.
+
+In een eenvoudige lineaire regressie is deze test niet echt interessant, omdat deze statistiek gewoon de informatie dupliceert die wordt gegeven door de t-test, welke beschikbaar is in de coëfficiëntentabel.
+
+De F-statistiek wordt belangrijker zodra er meerdere voorspellers zijn zoals bij meervoudige lineaire regressie.
+
+Een grote F-statistiek komt overeen met een statistisch significante p-waarde (p \< 0,05).
+
+::: callout-note
+In het voorbeeld is de F-statistic gelijk aan 451 en produceert een p-waarde \<2e-16, wat zeer significant is.
+:::
+
+### Significantie coëfficienten
+
+Onder de tekst Coefficients zie je de rijen voor Intercept en de variabelen. Aan het eind van deze rijen kunnen sterren staan. Deze sterren geven aan dat de betreffende rij significant is, dus dat het voor deze regressie van belang is dat deze variabele in het model wordt gebruikt. Des te meer sterren, des te meer significantie. Een aanduiding met één ster is al genoeg om aan te tonen dat de variabele significant is. Als er geen sterren staan is de variabele niet significant, dus niet verklarend genoeg in de regressie.
+
+::: callout-note
+Het is te zien dat veranderingen in het advertentiebudget van `youtube` en `facebook` significant geassocieerd zijn met veranderingen in `sales`, terwijl veranderingen in `newspaper` niet significant geassocieerd zijn met `sales`.
+:::
+
+## Aanpassing model
+
+Omdat de variabele `newspaper` niet significant is, kun je deze uit het model verwijderen en onderzoeken of het nieuwe model beter is.
+
+```{r}
+#| label: marketing-model2
+model2 <- lm(sales ~ youtube + facebook, data = trainData)
+coef(model2) # coëfficienten regressievergelijking
+```
+
+De regressievergelijking wordt nu:
+
+$sales = 3.6586 + 0.0446*youtube + 0.1902*facebook$
+
+Met `fitted()` krijg je de berekende waarden volgens de regressievergelijking.
+
+```{r}
+#| label: marketing-model2-fitted
+head(fitted(model2), 10)
+```
+
+```{r}
+#| label: marketing-model2-summary
+summary(model2)
+```
+
+Alle coëfficienten zijn significant en de F-statistic is flink omhoog gegaan. De $R^2$, de gecorrigeerde $R^2$ en de RSE zijn nauwelijks veranderd.
+
+### Anova
+
+Met de functie `anova()` krijg je een hiërarchische variantie-analyse van elk van de termen in het model, in dezelfde volgorde als in de modelformule.
+
+```{r}
+#| label: marketing-model2-anova
+anova(model2)
+```
+
+### Residuen
+
+Een lineair model met goede $p$- en $R^2$-waarden hoeft niet persé een goed model te zijn. Deze waarden vertellen niet het hele verhaal. Je moet ook altijd naar de residuen (Residuals) kijken, dus de verschillen tussen de werkelijke waarden en de voorspelde waarden volgens de regressievergelijking. Residuen kunnen onverklaarde patronen onthullen in de gegevens van het toegepaste model.
+
+Bij een goed model moet het gemiddelde en som van de residuen bij benadering zo dicht mogelijk bij nul liggen. Daarnaast moeten de waarden willekeurig verdeeld zijn. Je kunt dit beoordelen door een grafiek van de residuen te maken. Met deze informatie kun je niet alleen controleren of aan de aannames voor lineaire regressie voldaan is, maar kun je het model ook op een verkennende manier verbeteren.
+
+Met `residuals()` krijg je de individuele residuen.
+
+```{r}
+#| label: marketing-model2-residuen
+head(residuals(model2))
+# gemiddelde van de residuen
+mean(residuals(model2))
+```
+
+### Diagnostische grafieken
+
+Voor verdere uitleg hierover zie @sec-diagnoses.
+
+```{r}
+#| layout-ncol: 2
+#| label: fig-marketing-model2-diagnose
+#| fig-cap: "Diagnostische grafieken"
+#| fig-subcap: 
+#|   - "Residuals - Fitted values"
+#|   - "Normal Q-Q"
+#|   - "Scale-Location"
+#|   - "Residuals - Leverage"
+
+plot(model2)
+```
+
+## Testen met testData
+
+Voor het testen wordt het laatste, aangepaste `model2` gebruikt.
+
+```{r}
+#| label: marketing-model2-voorspellingen
+voorspellingen <- predict(model2, testData)
+```
+
+De functie `postResample(pred, obs)` uit package `caret` kan gebruikt worden om de Root Mean Squared Error (RMSE), de eenvoudige $R^2$ en de Mean Absolute Error (MAE) te bepalen. Je kunt desgewenst ook de afzonderlijke functies `RMSE(pred, obs)`, `R2(pred, obs)` en `MAE(pred, obs)` gebruiken.
+
+```{r}
+#| label: marketing-model2-fouten
+postResample(pred = voorspellingen, obs = testData$sales)
+```
+
+### RMSE {.unnumbered}
+
+De RMSE is een metriek die je vertelt hoe ver de voorspelde waarden (pred = predicted) gemiddeld verwijderd zijn van de waargenomen waarden (obs = observed) in een regressieanalyse, ofwel de voorspellingsfout van het model. Hoe lager de RMSE, des te beter het model.
+
+Het wordt berekend via:
+
+$RMSE = \sqrt{\frac{\sum_{i=1}^{n}(pred_i - obs_i)^2}{n}}$
+
+De RMSE kan gezien worden als de standaardafwijking van de onverklaarbare variantie en wordt uitgedrukt in dezelfde eenheid als de vorspelvariabele. RMSE is een goede maat voor de nauwkeurigheid waarmee het model voorspellingen doet en is een belangrijk criterium wanneer het hoofddoel het doen van voorspellingen is.
+
+### R2 {.unnumbered}
+
+De R2 berekening in caret is een rechttoe rechtaan berekening van de correlatie tussen de waargenomen en voorspelde waarden (dus $R$) en daarna het kwadrateren van deze waarde. Wanneer het model slecht is, kan dit leiden tot verschillen tussen deze schatter en de meer algemeen bekende schatting afgeleid van lineaire regressiemodellen.
+
+```{r}
+#| label: marketing-model2-correlaties
+# correlatiecoefficient R
+cor(voorspellingen, testData$sales)
+```
+
+### MAE {.unnumbered}
+
+Net als de RMSE meet MAE de voorspelfout en is wat minder gevoelig voor uitbijters. De MAE wordt berekend via
+
+$MAE = \frac{\sum_{i=1}^{n}|pred_i - obs_i|}{n}$
+
+::: callout-note
+De RMSE is 1,95, wat overeenkomt met een foutpercentage van 1,95/mean(testData\$sales) = 1,97/16.7 = 11,7%, wat ook goed is.
+
+Een R-kwadraat van 0,907 betekent dat de waargenomen en voorspelde uitkomstwaarden sterk gecorreleerd zijn, wat erg goed is.
+
+En een MAE van 1,4 is ook goed.
+:::
+
+## Interactie-effecten
+
+Het tot nu toe gebruikte model is een *additief model*:
+
+$sales = b_0 + b_1*youtube + b_2*facebook$
+
+Hierbij wordt verondersteld dat er geen relatie is tussen de voorspelvariabelen `youtube` en `facebook`. Deze veronderstelling is misschien niet waar. Geld uitgeven aan Facebook-advertenties kan bijvoorbeeld de effectiviteit van YouTube-advertenties op de verkoop vergroten. In marketing staat dit bekend als een *synergie-effect* en in statistieken wordt het een *interactie-effect* genoemd
+
+Een regressievergelijking met interactie-effecten tussen deze voorspelvariabelen kan er als volgt uitzien:
+
+$sales = b_0 + b_1*youtube + b_2*facebook + b_3*(youtube*facebook)$
+
+::: callout-note
+$b_3$ kan worden geïnterpreteerd als de toename van de effectiviteit van YouTube-advertenties voor een toename van één eenheid in Facebook-advertenties (of omgekeerd).
+:::
+
+Het model wordt dan
+
+```{r}
+#| label: marketing-model3
+model3 <- lm(sales ~ youtube + facebook + youtube:facebook, data=trainData)
+summary(model3)
+
+voorspellingen <- predict(object = model3, newdata = testData)
+
+RMSE(voorspellingen, testData$sales)
+R2(voorspellingen, testData$sales)
+```
+
+**Interpretatie**
+
+Het is te zien dat alle coëfficiënten, inclusief de interactietermcoëfficiënt, statistisch significant zijn, wat suggereert dat er een interactierelatie is tussen de twee voorspellende variabelen `youtube` en `facebook`.
+
+De regressievergelijking ziet er nu als volgt uit:
+
+$sales = 8.18 + 0,0186*youtube + 0,0278*facebook + 0,0009*youtube*facebook$
+
+De RMSE van het interactiemodel is 1,06 wat lager is dan de 1,95 van het additieve model.Aanvullend is de $R^2$ van het interactiemodel 97% en hoger dan de 91% van het additieve model.
+
+Deze resultaten suggereren dat het model met de interactieterm beter is dan het model dat alleen hoofdeffecten bevat. Voor deze specifieke data is dus het interactiemodel het aangewezen model.
+
+## Kruisvalidatie
+
+Na het bouwen van een model wil je weten hoe nauwkeurig het model is bij het voorspellen van de uitkomst voor nieuwe waarnemingen die niet zijn gebruikt om het model te bouwen. Met andere woorden, je wilt de voorspellingsfout schatten. Een van de manieren voor het valideren van het model op de testgegevens is kruisvalidatie (cross-validation).
+
+Kruisvalidatie staat ook bekend als een *resampling-methode* (herbemonstering) omdat het inhoudt dat dezelfde statistische methode meerdere keren wordt aangepast met behulp van verschillende subsets van de gegevens. De meest gebruikte kruisvalidatiemethodes zijn de *k-voudige kruisvalidatie* en de *herhaalde k-voudige kruisvalidatie*.
+
+De statistieken die gebruikt zullen worden voor een beoordeling van de kwaliteit van een model zijn
+
+1.  R-squared ($R^2$) : hoe hoger, hoe beter
+2.  RMSE (gemiddelde voorspellingsfout) : hoe lager, hoe beter
+3.  MEA (gemiddelde absolute fout) : hoe lager, hoe beter
+
+### k-voudige kruisvalidatie
+
+Deze methode evalueert de modelprestaties op verschillende subsets van de trainingsgegevens en berekent vervolgens de gemiddelde voorspellingsfoutpercentage. Het algoritme is als volgt:
+
+1.  Splits de dataset willekeurig in k-subsets (of k-voudig), bijvoorbeeld 5 subsets.
+2.  Reserveer één subset voor het testen en train het model op alle andere subsets.
+3.  Test het model op de gereserveerde subset en bepaal de voorspellingsfout
+4.  Herhaal dit proces totdat elk van de k subsets als testset heeft gediend.
+5.  Bereken het gemiddelde van de k geregistreerde fouten. Dit wordt de *kruisvalidatiefout* genoemd en dient als prestatiestatistiek voor het model.
+
+Typische vraag, is hoe de juiste waarde van k te kiezen?
+
+In de praktijk voert men doorgaans een k-voudige kruisvalidatie uit met k = 5 of k = 10, aangezien empirisch is aangetoond dat deze waarden schattingen van het testfoutpercentage opleveren die niet lijden onder een extreem hoge bias of een zeer hoge variantie.
+
+Met de functie `trainControl` worden de details voor de resampling gespecificeerd.
+
+Syntax: `trainControl( method, number, repeats, ...)`
+
+-   `method`: De resampling methode, bijv. "boot", "cv", "repeatedcv", ...
+-   `number`: het aantal vouwen (subsets) of resampling iteraties
+-   `repeats`: het aantal keren dat herhaald moet worden, alleen voor methode "repeatedcv"
+
+Toegepast op het model met de interactie
+
+```{r}
+#| label: marketing-model4
+# Data
+data("marketing", package = "datarium")
+
+# Define training control
+set.seed(123) 
+train.control <- trainControl(method = "cv", number = 10)
+# Train the model
+model4 <- train(sales ~ youtube + facebook + youtube:facebook, data = marketing, method = "lm",
+               trControl = train.control)
+# Summarize the results
+print(model4)
+model4$finalModel
+```
+
+### Herhaalde k-voudige kruisvalidatie
+
+Bij deze methode wordt het proces van het splitsen van de data in k subsets een aantal keren herhaald. De uiteindelijke modelfout wordt dan de gemiddelde fout van het aantal herhalingen.
+
+```{r}
+#| label: marketing-model5
+# Define training control
+set.seed(123)
+train.control <- trainControl(method = "repeatedcv", 
+                              number = 10, repeats = 3)
+# Train the model
+model5 <- train(sales ~ youtube + facebook + youtube:facebook, data = marketing, method = "lm",
+               trControl = train.control)
+# Summarize the results
+print(model5)
+model5$finalModel
+```

@@ -1,0 +1,238 @@
+# Correlatie
+
+```{r}
+#| results: "asis"
+#| echo: false
+source("_common.R")
+```
+
+Bij regressiemodellen wordt uitgegaan van een causaal (oorzakelijk) verband tussen variabelen. Het is echter ook mogelijk dat er een samenhang is tussen twee variabelen zonder dat vastgesteld kan worden waardoor dat komt. Het zou kunnen dat deze twee variabelen door een andere variabele beinvloed worden.
+
+Er is sprake van **multicollineariteit** wanneer meerdere onafhankelijke variabelen onderling sterk gecorreleerd zijn. Dit maakt het inschatten van de relatie tussen elke onafhankelijke variabele en de afhankelijke variabele moeilijk omdat de onafhankelijke variabelen elkaar onderling beinvloeden. Een sterke multicollineariteit zorgt voor een toename in de variantie van de uitkomsten en maakt de uitkomsten gevoelig voor kleine wijzigingen in het model. De statische gevolgtrekking uit de data wordt minder betrouwbaar en uitkomsten van machine learning modellen minder stabiel.
+
+::: {#exm-correlatie}
+**Eenvoudig voorbeeld**
+
+```{r}
+#| label: cor-vbsimpel
+set.seed(12345)
+
+mydf <- data.frame(x = sample(1:20, size = 20) + rnorm(n=10, mean=1, sd=2)) %>%
+	mutate(y = x + rnorm(n=10, mean=10, sd=3)) %>%
+	mutate(z = (sample(1:20, size = 20)/2) + rnorm(n=20, mean=1, sd=5))
+
+plot(mydf)
+
+```
+
+In de grafiek is tussen x en y een positieve correlatie waar te nemen.
+:::
+
+## Covariantie
+
+Een maatstaf voor de lineaire samenhang tussen twee kansvariabelen is de **covariantie**.
+
+Voor een populatie:
+
+$$cov(x,y) = \sigma_{xy} = \frac{1}{N}\sum_{i=1}^{N}(x_i-\mu_x)(y_i-\mu_y)$$
+
+Voor een steekproef:
+
+$$cov(x,y) = s_{xy} = \frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})$$
+
+Het interpreteren van de covariantie kan lastig zijn omdat deze niet gestandaardiseerd is. Standaardiseren wil zeggen dat je corrigeert voor de meetschaal van de variabele. Als bijvoorbeeld de massa van een voorwerp uitdrukt in kilogrammen, dan is de meetschaal duizend keer kleiner dan wanneer je de massa uitdrukt in grammen. De covariantie is afhankelijk van de meetschaal van de variabelen, en is dus groter als massa in grammen is uitgedrukt dan als massa in kilogrammen is uitgedrukt. Daarom wordt meestal met de **correlatiecoëfficient** gewerkt.
+
+## Correlatiecoëfficient
+
+Door de covariantie te delen door de standaarddeviaties corrigeer je wel voor de meetschalen. Daarom ligt de correlatiecoefficient altijd tussen -1 en +1. Het teken geeft de richting (positief of negatief) aan. Als er geen relatie bestaat tussen de twee variabelen is de correlatiecoëfficiënt 0.
+
+De correlatie tussen twee variabelen kun je in R berekenen met de functie `cor()`.
+
+syntax: `cor(x, y = NULL, method = c("pearson", "kendall", "spearman"))`
+
+-   `x`, een numerieke vector, matrix of data frame
+-   `y`, NULL (default, en is gelijk aan y=x) of een vector, matris of data frame, met vergelijkbare afmetingen als x.
+-   `method`, geeft aan welke correlatiecoëfficient berekend moet worden. Pearson is de meest gebruikte.
+
+### Pearson
+
+Gebruik de Pearson correlatiecoëfficiënt om de mate van lineaire samenhang te beoordelen tussen twee kwantitatieve (interval of ratio) variabelen. De aanwezigheid van uitbijters beinvloedt de maat.
+
+Voor een populatie:
+
+$$\rho_{xy} = \frac{cov(x,y)}{\sigma_x \sigma_y} = \frac{\sigma_{xy}}{\sigma_x \sigma_y}$$
+
+Voor een steekproef:
+
+$$r(x,y) = \frac{s_{xy}}{s_x s_y}$$
+
+```{r}
+cor(mydf, method = "pearson")
+```
+
+Ook hieruit blijkt dat er een sterke positieve correlatie is tussen x en y.
+
+Hou bij het interpreteren van de Pearson correlatiecoefficiënt wel het volgende in gedachten:
+
+1.  Correlatie impliceert geen oorzakelijk verband.
+2.  Deze is gevoelig voor uitschieters (uitbijters).
+3.  Het zegt alleen iets over een mogelijke lineaire samenhang en niets over een niet-lineaire samenhang.
+
+Wanneer de gegevensverzameling meerdere variabelen bevat, dan kun je correlatiecoefficiënt voor alle mogelijke combinaties van twee variabelen berekenen en deze afbeelden in een **correlatiematrix**.
+
+Als voorbeeld de berekening van de correlatiematrix voor `mtcars`.
+
+```{r}
+#| label: cor-cormatrix
+
+#Berekening correlatie(matrix)
+cormat <- round(cor(mtcars, method = "pearson"), 2) # op 2 decimalen
+cormat
+```
+
+Merk ook op dat de correlatiecoëfficiënten langs de diagonaal van de tabel allemaal gelijk zijn aan 1 omdat elke variabele uiteraard een perfecte correlatie met zichzelf heeft. Verder is de correlatiematrix symmetrisch. De waarden boven de diagonaal zijn gelijk aan de waarden onder de diagonaal. Vaak wordt deze bovenste helft dan ook weggelaten.
+
+Met package `corrplot` kun je de correlatiematrix visualiseren waardoor het beoordelen van de matrix gemakkelijker en sneller gaat.
+
+```{r}
+#| label: cor-corplot1
+corrplot::corrplot(cormat, 
+				   title = "Correlatiematrix mtcars", 
+				   type = "lower", 
+				   tl.cex = 0.8, tl.col = "black", tl.srt = 45)
+```
+
+Positieve waarden worden in blauw weergegeven en negatieve waarden in rood. De intensiteit van de kleur is evenredig met de correlatiecoëfficiënt, dus hoe sterker de correlatie (d.w.z. hoe dichter bij -1 of 1), hoe donkerder de vakken.
+
+Er zijn veel argumenten beschikbaar om de opmaak te wijzigen. Een voorbeeld
+
+```{r}
+#| label: cor-corplot2
+corrplot::corrplot(cormat, method = "color", type = "upper", outline = TRUE, 
+				   diag = FALSE, addCoef.col = "black", number.digits = 2)
+```
+
+-   `method` bepaalt de vorm van het correlatieobject. Mogelijke waarden: "circle" (default), "square", "ellipse", "number", "pie", "shade" en "color".
+-   `type` bepaalt wat weergegeven wordt. Mogelijke waarden: "full", "upper" of "lower".
+-   `outline` voor het weergeven van de zwarte omtrek bij cirkels, vierkanten, ...
+-   `diag` voor het weergeven van de correlatiecoefficienten op de hoofddiagonaal. Waarden: FALSE (default), TRUE
+-   `addCoef.col` om de correlatiecoefficienten weer te geven in een bepaalde kleur.
+-   `number.digits` het aantal decimalen
+-   `sig.level` het significantieniveau (default 0.05)
+
+### Spearman
+
+Gebruik de Spearman correlatiecoëfficient om de mate van samenhang te beoordelen tussen rangorde variabelen. Deze test kan worden gebruikt als de gegevens niet afkomstig zijn van een bivariate normale verdeling.
+
+Als voorbeeld de berekening van de correlatie tussen het aantal cylinders en het aantal versnellingen in de data `mtcars`.
+
+```{r}
+#| label: cor-spearman
+cormat <- cor(mtcars[, c("cyl", "gear")], method = "spearman")
+round(cormat, 2)
+```
+
+### Kendall
+
+De Kendall correlatiecoëfficiënt kan ook gebruikt worden om de mate van samenhang te beoordelen tussen rangorde variabelen. Deze test kan worden gebruikt als de gegevens niet noodzakelijkerwijs afkomstig zijn van een bivariate normale verdeling. Het is echter een niet-parametrische maat.
+
+## Correlatie en causaliteit
+
+**Correlatie is geen causaliteit**. Het kan zijn dat er correlatie tussen twee variabelen is, maar dat een andere variabele de samenhang verklaart. Een bekend voorbeeld: er is een relatie tussen schoenmaat van kinderen en hoe goed ze kunnen lezen. Maar dat betekent niet dat je schoenmaat je leesniveau beïnvloedt (of, gekker nog, dat je grotere voeten krijgt als je goed kunt lezen). Nee, er is een derde 'verstorende variabele': leeftijd. Oudere kinderen hebben én grotere voeten én kunnen beter lezen.
+
+Voor causaliteit moet je onderzoeksmodel voldoen aan een aantal voorwaarden; (1) correlationeel verband, (2) tijdsvolgorde, eerst oorzaak dan gevolg, en (3) afwezigheid vs aanwezigheid oorzaak.
+
+Mooie voorbeelden van valse correlaties vind je op [Spurious correlations](https://www.tylervigen.com/spurious-correlations)
+
+## Correlatie toetsing
+
+Met de functie `cor.test` kun je een correlatietoetsing uitvoeren.
+
+`cor.test(x, y, alternative, method, conf.level, ...)`
+
+-   `alternative`geeft de alternatieve hypothese aan. Waarden: "two.sided", "greater", "less".
+-   `method` bepaalt de te gebruiken methode. Waarden: "pearson", "kendall", "spearman"
+-   `conf.level` bepaalt het betrouwbaarheidsinterval (alleen voor Pearson)
+
+De hypotheses zijn:
+
+-   $H_0: \rho = 0$ (correlatiecoefficient =0, er is geen correlatie)
+-   $H_1: \rho \ne 0$
+
+::: callout-note
+Beslissingsregel: Als de p-waarde \< alpha (0.05) dan wordt de nulhypothese verworpen.
+:::
+
+Als voorbeeld wordt de ingebouwde dataset `mtcars` gebruikt. De samenhang tussen de variabelen `mpg` en `wt` wordt nu onderzocht.
+
+**Pearson**
+
+```{r}
+#| label: cor-test-pearson
+cor.test(mtcars$mpg, mtcars$wt, method = "pearson")
+```
+
+De p-waarde is kleiner dan $\alpha = 0,05$. Je kunt dus concluderen dat `wt` en `mpg` significant correleren met een correlatiecoëfficient van -0.87 en een p waarde van 1.29410\^{-10}
+
+**Kendall**
+
+```{r}
+#| label: cor-test-kendall
+cor.test(mtcars$mpg, mtcars$wt, method = "kendall")
+```
+
+**Spearman**
+
+```{r}
+#| label: cor-test-spearman
+cor.test(mtcars$mpg, mtcars$wt, method = "spearman")
+```
+
+
+Voor de visualisatie kun je `ggscatter()` uit package `ggpubr` gebruiken.
+
+```{r}
+#| label: fig-cor-scatter
+#| fig-cap: "Spreidingsdiagram"
+ggpubr::ggscatter(mtcars, x = "mpg", y = "wt", 
+		  add = "reg.line", conf.int = TRUE, 
+		  cor.coef = TRUE, cor.method = "pearson", 
+		  xlab = "Miles/gallon (us)", ylab = "Weight (1000 lbs)")
+```
+
+### Controle aannames
+
+**1 - Is de covariantie lineair?**
+
+Ja, gezien de grafiek. In de situatie waarin de spreidingsdiagrammen gebogen patronen vertonen, heb je te te maken met niet-lineaire associatie tussen de twee variabelen.
+
+**2 - Volgen de gegevens van elk van de twee variabelen een normale verdeling?**
+
+Gebruik *Shapiro-Wilk* normaliteitstest.
+
+```{r}
+#| label: cor-shapiro-wilk
+shapiro.test(mtcars$mpg) # Shapiro-Wilk normality test voor mpg
+shapiro.test(mtcars$wt)  # Shapiro-Wilk normality test voor wt
+```
+
+De twee p-waarden zijn groter dan het significantieniveau 0,05, wat betekent dat de verdeling van de gegevens niet significant verschilt van de normale verdeling. Met andere woorden, we kunnen uitgaan van de normaliteit.
+
+Beoordeel de normaliteitsgrafiek.
+
+```{r}
+#| label: fig-cor-test-normaliteit
+#| layout-ncol: 2
+#| fig-cap: "Normaliteitsgrafieken"
+#| fig-subcap: 
+#|   - "mpg"
+#|   - "wt"
+ggpubr::ggqqplot(mtcars$mpg, ylab = "mpg")
+ggpubr::ggqqplot(mtcars$wt, ylab = "wt")
+```
+
+Uit deze verdelingen kun je concluderen dat beide populaties uit normale verdelingen komen.
+
+::: callout-note
+Wanneer de gegevens niet normaal worden verspreid, dan is het aan te bevelen om de niet-parametrische correlatie te gebruiken, inclusief de op rang gebaseerde correlatietests van Spearman en Kendall.
+:::

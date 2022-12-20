@@ -1,0 +1,16 @@
+/*-- scss:defaults --*/
+
+$tbGray:   #7E7E7E;    /* Gray */
+
+/*-- scss:rules --*/
+
+.figure-caption {
+	font-size: .9em;
+}
+
+.example {
+  padding: 0.5em;
+  margin: 10px 0 10px 0;      /* top right bottom left */
+  border: 1px solid $tbGray;
+  border-radius: 5px;
+}

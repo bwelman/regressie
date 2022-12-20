@@ -1,0 +1,26 @@
+# Inleiding {.unnumbered}
+
+Dit boek bevat door mij verzamelde notities over regressie en correlatie. Veel voorbeelden zijn afkomstig van internet of uit diverse boeken. Waar mogelijk is zoveel mogelijk gebruik gemaakt van `tidyverse` en het bijbehorende datatype `tibble`.
+
+Hoewel regressie en correlatie vaak samen gebruikt worden, zijn het twee verschillende begrippen.
+
+-   **Regressie** heeft als doel om de *soort relatie* tussen $y$ en $x$ te bepalen. Bijvoorbeeld neemt $y$ lineair toe als $x$ toeneemt.
+-   **Correlatie** meet de *sterkte van een relatie*. Is die sterk of juist zwak.
+
+**Regressieanalyse** bestaat uit een reeks machine learning-methoden waarmee je een continue uitkomstvariabele ($y$) kunt voorspellen op basis van de waarde van een of meerdere voorspellende variabelen ($x$).
+
+Kort gezegd komt het er op neer om een wiskundige vergelijking te maken waarin $y$ gedefinieerd wordt als functie van $x$ variabelen.
+
+-   $y$: afhankelijke (respons, uitkomst) variabele.
+-   $x$: onafhankelijke (verklarende, voorspellende) variabele(n).
+
+Vervolgens kan deze vergelijking worden gebruikt om de uitkomst $y$ te voorspellen op basis van nieuwe waarden van de voorspellende variabelen $x$.
+
+::: callout-important
+Regressie en correlatie verklaren de wijzigingen in de afhankelijke variabele, maar niet de oorzaak van deze wijzigingen. Dus niet of er een oorzakelijk verband is.
+:::
+
+De volgende regressietechnieken komen aan bod
+
+-   Lineaire regressie
+-   Logistische regresssie

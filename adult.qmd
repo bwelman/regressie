@@ -1,0 +1,296 @@
+# Adult Income
+
+Bron: <https://www.r-bloggers.com/2020/05/binary-logistic-regression-with-r/>
+
+Het jaarinkomen van een persoon is het gevolg van verschillende factoren. Intuïtief wordt het beïnvloed door opleidingsniveau, leeftijd, geslacht, beroep, enz. Een veelgebruikte gegevensverzameling om een model te maken of het inkomen groter is dan \$50K/yr is de *Adult Income dataset* welke o.a. op Kaggle te vinden is: [Adult Income dataset](https://www.kaggle.com/wenruliu/adult-income-dataset)
+
+De afhankelijke variabele `income` heeft twee waarden: "\>50K"en "\<=50K".
+
+Variabelen
+
+-   age: continuous.
+-   workclass: Private, Self-emp-not-inc, Self-emp-inc, Federal-gov, Local-gov, State-gov, Without-pay, Never-worked.
+-   fnlwgt: continuous.
+-   education: Bachelors, Some-college, 11th, HS-grad, Prof-school, Assoc-acdm, Assoc-voc, 9th, 7th-8th, 12th, Masters, 1st-4th, 10th, Doctorate, 5th-6th, Preschool.
+-   education-num: continuous.
+-   marital-status: Married-civ-spouse, Divorced, Never-married, Separated, Widowed, Married-spouse-absent, Married-AF-spouse.
+-   occupation: Tech-support, Craft-repair, Other-service, Sales, Exec-managerial, Prof-specialty, Handlers-cleaners, Machine-op-inspct, Adm-clerical, Farming-fishing, - Transport-moving, Priv-house-serv, Protective-serv, Armed-Forces.
+-   relationship: Wife, Own-child, Husband, Not-in-family, Other-relative, Unmarried.
+-   race: White, Asian-Pac-Islander, Amer-Indian-Eskimo, Other, Black.
+-   sex: Female, Male.
+-   capital-gain: continuous.
+-   capital-loss: continuous.
+-   hours-per-week: continuous.
+-   native-country: United-States, Cambodia, England, Puerto-Rico, Canada, Germany, Outlying-US(Guam-USVI-etc), India, Japan, Greece, South, China, Cuba, Iran, Honduras, Philippines, Italy, Poland, Jamaica, Vietnam, Mexico, Portugal, Ireland, France, Dominican-Republic, Laos, Ecuador, Taiwan, Haiti, Columbia, Hungary, Guatemala, Nicaragua, Scotland, Thailand, Yugoslavia, El-Salvador, Trinadad&Tobago, Peru, Hong, Holand-Netherlands.
+
+```{r}
+library(tidyverse)
+adult <- read_csv("data/adult.csv", show_col_types = FALSE)
+str(adult)
+```
+
+In deze oefening zijn de onafhankelijke variabelen: `workclass`, `marital-status` en `age`. Daartoe wordt de gevensverzameling verkleind tot alleen de afhankelijke en onafhankelijke variabelen.
+
+```{r}
+adult <- adult %>% select(workclass, 'marital-status', age, income) %>%
+	rename(marital.status = 'marital-status')
+str(adult)
+```
+
+## Onderzoek categorie variabelen
+
+**Variabele `workclass`**
+
+```{r}
+table(adult$workclass)
+```
+
+De tabel suggereert dat er in deze variabele 2799 ontbrekende waarden zijn, voorgesteld door (?) Symbool. Bovendien zijn de gegevens niet uniform verdeeld. Sommige niveaus hebben zeer weinig waarnemingen. Om deze reden worden vergelijkbare niveaus gecombineerd:
+
+-   `Without-pay` en `Never-worked` worden vervangen door waarde `Unemployed`
+-   `State-gov` en `Local-gov` worden vervangen door waarde `SL-gov`
+-   `Self-emp-inc` en `Self-emp-not-inc` worden vervangen door waarde `Self-employed`
+
+```{r}
+adult$workclass <- replace(adult$workclass, adult$workclass == "Without-pay" | adult$workclass == "Never-worked", "Unemployed")
+adult$workclass <- replace(adult$workclass, adult$workclass == "State-gov" | adult$workclass == "Local-gov", "SL-gov")
+adult$workclass <- replace(adult$workclass, adult$workclass == "Self-emp-inc" | adult$workclass == "Self-emp-not-inc", "Self-employed")
+#Controleer tabel
+table(adult$workclass)
+```
+
+**Variabele `marital-status`**
+
+```{r}
+table(adult$marital.status)
+```
+
+Ook hier worden waarden gecombineerd:
+
+-   `Married-AF-spouse`, `Married-civ-spouse` en `Married-spouse-absent` vervangen door `Married`
+-   `Divorced`, `Separated` en `Widowed` vervangen door `Not-Married`
+
+```{r}
+adult$marital.status <- replace(adult$marital.status, adult$marital.status == "Married-AF-spouse" | adult$marital.status == "Married-civ-spouse" | adult$marital.status == "Married-spouse-absent", "Married")
+adult$marital.status <- replace(adult$marital.status, adult$marital.status == "Divorced" | adult$marital.status == "Separated" | adult$marital.status == "Widowed", "Not-Married")
+
+#Controleer tabel
+table(adult$marital.status)
+```
+
+De variabele `marital.status` ziet er beter verdeeld uit dan de variabele `workclass`.
+
+Het type moet nu nog omgezet worden naar factorvariabelen.
+
+```{r}
+adult$workclass <- as.factor(adult$workclass)
+adult$marital.status <- as.factor(adult$marital.status)
+adult$income <- as.factor(adult$income)
+str(adult)
+```
+
+**Verwijdering ontbrekende waarden**
+
+Allereerst worden alle `?` omgezet naar `NA` en dan kan functie `na.omit()` gebruikt worden om deze te verwijderen.
+
+```{r}
+adult[adult == "?"] <- NA
+adult <- na.omit(adult)
+```
+
+**Variabele `age`**
+
+Omdat dit een continue variabele is bestuderen we de verdeling van de waarden via een histogram. Om tijd te besparen doen we dit tegelijk voor de twee inkomensgroepen.
+
+```{r}
+ggplot(adult, aes(age)) + 
+  geom_histogram(aes(fill = income), color = "black", binwidth = 2)
+```
+
+De gegevens lijken veel meer scheef voor de groep met een lager inkomen dan voor de groep met een hoog inkomen.
+
+## Constructie model
+
+De gegevens worden gesplitst in 70% voor `train` en 30% voor `test` met de functie `createDataPartition()` uit de `caret` package.
+
+```{r}
+require(caret)
+trainindex <- createDataPartition(adult$income, p = .70, list = FALSE)
+train <- adult[trainindex, ]
+test <- adult[-trainindex, ]
+```
+
+Voor het opstellen van een logistisch model wordt de functie `glm` gebruikt voor de data `train`.
+
+```{r}
+# Train het model
+model <- glm(income ~ ., family = binomial(), train)
+# Samenvatting model
+summary(model)
+
+```
+
+### Interpretatie
+
+Alle variabelen in de bovenstaande uitvoer zijn significant gebleken (p-waarden zijn minder dan 0,05 voor alle variabelen). Als je naar de categorische variabelen kijkt, zie je dat n - 1 dummyvariabelen voor deze variabelen zijn gemaakt. Hier staat n voor het totale aantal niveaus. De enige variabele die overblijft, wordt beschouwd als de referentievariabele en alle andere variabele niveaus worden geïnterpreteerd in verwijzing naar dit niveau.
+
+**Null deviance** - suggereert de reactie van het model als alleen naar het intercept gekeken wordt; hoe lager de waarde, des te beter is het model.
+
+**Residual deviance** - geeft de respons van het model wanneer alle variabelen zijn opgenomen; hoe lager de waarde, des te beter is het model.
+
+**(intercept)** - Intercept (β0) geeft de log odds van de hele populatie om in een hogere inkomensklasse te zit zonder voorspellende variabelen in het model. De log odds kan eenvoudig naar kansen worden getransformeerd via de sigmoid-functie: `p = exp(-0.514424)/(1+exp(-0.514424)) = 0.374157.`\
+
+De andere manier is om deze logit van odds om te zetten in eenvoudige odds door exp(-`0.514424`) = 0.5978 te nemen. Het getal geeft aan dat de kans dat een persoon in de hoge inkomensgroep valt met 40% afneemt als we geen voorspellende variabelen hebben.
+
+**workclassPrivate** - De bètacoëfficiënt voor deze variabele is -0.722036. Omgezet naar kansen met exp(-0.722036) = 0.4857622. De waarde geeft aan dat de kans dat een persoon met een Private work-class in de hoge inkomensgroep zit, met 51,4% afneemt dan die in een baan bij de Federal-gov.
+
+::: callout-note
+Van de 5 niveaus (levels) werd het niveau van de Federal-gov de referentie, en dus worden alle andere niveaus van workclass variabelen afgeleid in vergelijking met de variabele waarnaar wordt verwezen. Op deze manier worden de categorische variabelen geïnterpreteerd.
+:::
+
+**age** - De bètacoëfficiënt van de variabele leeftijd is 0.021429 (in logit odds-termen). Omgezet naar kansen wordt dit exp(0.021429)=1.022. De waarde geeft aan dat naarmate de leeftijd met nog een eenheid stijgt, de kans dat een persoon in de hoge inkomensgroep valt met 2% zal toenemen.
+
+::: callout-note
+Odds-waarde is nooit negatief en de waarde van 1 geeft aan dat deze variabele geen invloed heeft op de doelvariabelen. Als de waarde kleiner is dan één, wordt de waarde gelezen als (1 -- waarde) als een afname van de odds en een waarde groter dan één geeft een toename van de odds aan.
+:::
+
+## Voorspelling afhankelijke variabele (Y) in dataset test
+
+Om de doelvariabele in de ongeziene gegevens te voorspellen wordt de functie `predict()` gebruikt. De uitvoer hiervan is de kans.
+
+```{r}
+pred_prob <- predict(model, test, type = "response")
+head(pred_prob)
+```
+
+## Evaluatie logistisch regressiemodel
+
+Er zijn een aantal manieren waarop je het logistische regressiemodel kunt valideren. De meest populaire worden besproken.
+
+Classificatietabel - I would say this one is the most popular validation technique among all the known validation methods of the logistic model. It's basically a contingency table that we draw between the actual values and the predicted values. The table is then used to dig in many other estimates like **Accuracy**, **Misclassification Rate**, **True Positive Rate**, also known as recall, **True Negative Rate**, and **Precision**.
+
+Here is the representation of the contingency table marking essential terms.
+
+![](images/confusionmatrix.png)
+
+Before we create a contingency table, we need to convert the probability into the two levels IE class \<=50K and \>50K. To get these values, we will be using a simple `ifelse()` function and will create a new variable in the train data by the name pred_class.
+
+**We have to repeat the below steps for both the test and train dataset**.
+
+### Converting probability to class values in the training dataset
+
+```{r}
+# Converting from probability to actual output
+train$pred_class <- ifelse(model$fitted.values >= 0.5, ">50K", "<=50K")
+
+# Generating the classification table
+ctab_train <- table(train$income, train$pred_class)
+ctab_train
+```
+
+### Training dataset converting from probability to class values
+
+```{r}
+# Converting from probability to actual output
+test$pred_class <- ifelse(pred_prob >= 0.5, ">50K", "<=50K")
+
+# Generating the classification table
+ctab_test <- table(test$income, test$pred_class)
+ctab_test
+```
+
+### Accuracy
+
+Accuracy is calculated by adding the diagonal elements and dividing it by the sum of all the elements of the contingency table. We will also compare the accuracy of the training dataset with the test dataset to see if our results are holding in the unseen data or not.
+
+Accuracy = (TP + TN)/(TN + FP + FN + TP)
+
+```{r}
+# Accuracy in Training dataset
+accuracy_train <- sum(diag(ctab_train))/sum(ctab_train)*100
+accuracy_train
+```
+
+Our logistics model is able to classify 74.6% of all the observations correctly in the training dataset.
+
+```{r}
+# Accuracy in Test dataset
+accuracy_test <- sum(diag(ctab_test))/sum(ctab_test)*100
+accuracy_test
+```
+
+The over all correct classification accuracy in test dataset is 75.4% which is comparable to train dataset. This shows that our model is performing good.
+
+A model is considered fairly good if the model accuracy is greater than 70%.
+
+### Misclassification Rate
+
+Misclassification Rate indicates how often is our predicted values are False.
+
+Misclassification Rate = (FP+FN)/(TN + FP + FN + TP)
+
+### True Positive Rate -- Recall or Sensitivity
+
+Recall or TPR indicates how often does our model predicts actual TRUE from the overall TRUE events.
+
+Recall Or TPR = TP/(FN + TP)
+
+```{r}
+# Recall in Train dataset
+Recall <- (ctab_train[2, 2]/sum(ctab_train[2, ]))*100
+Recall
+```
+
+### True Negative Rate
+
+TNR indicates how often does our model predicts actual nonevents from the overall nonevents.
+
+TNR = TN/(TN + FP)
+
+```{r}
+# TNR in Train dataset
+TNR <- (ctab_train[1, 1]/sum(ctab_train[1, ]))*100
+TNR
+```
+
+### Precision
+
+Precision indicates how often does your predicted TRUE values are actually TRUE.
+
+Precision = TP/FP + TP
+
+```{r}
+# Precision in Train dataset
+Precision <- (ctab_train[2, 2]/sum(ctab_train[, 2]))*100
+Precision
+```
+
+### Calculating F-Score
+
+F-Score is a harmonic mean of recall and precision. The score value lies between 0 and 1. The value of 1 represents perfect precision & recall. The value 0 represents the worst case.
+
+```{r}
+F_Score <- (2 * Precision * Recall / (Precision + Recall))/100
+F_Score
+```
+
+### ROC Curve
+
+The area under the curve(AUC) is the measure that represents ROC(Receiver Operating Characteristic) curve. This ROC curve is a line plot that is drawn between the Sensitivity and (1 -- Specificity) Or between TPR and TNR. This graph is then used to generate the AUC value. An AUC value of greater than .70 indicates a good model.
+
+```{r}
+library(pROC)
+roc <- roc(train$income, model$fitted.values)
+auc(roc)
+```
+
+### Concordance
+
+Concordance In how many pairs does the probability of ones is higher than the probability of zeros divided by the total number of possible pairs. The higher the values better is the model. The value of concordance lies between 0 and 1.
+
+Similar to concordance, we have **disconcordance** which states in how many pairs the probability of ones was less than zeros. If the probability of ones is equal to 1 we say it is a **tied pair**.
+
+```{r}
+library(InformationValue)
+Concordance(model$y, model$fitted.values)
+```

@@ -1,0 +1,113 @@
+# Categoriale Regressie {#catregressie}
+
+```{r}
+#| results: "asis"
+#| echo: false
+source("_common.R")
+```
+
+Categorische variabelen (ook bekend als factor- of kwalitatieve variabelen) zijn variabelen die waarnemingen in groepen indelen. Ze hebben een beperkt aantal verschillende waarden, niveaus genoemd. Het geslacht van personen is bijvoorbeeld een categorische variabele die twee niveaus kan aannemen: mannelijk of vrouwelijk.
+
+Regressieanalyse vereist numerieke variabelen. Dus wanneer je een categorische variabele in een regressiemodel wilt opnemen moet je deze eerst naar numerieke waarden omzetten. Hiertoe worden de categorische variabelen gehercodeerd in een reeks afzonderlijke binaire variabelen. Bij deze hercodering waarbij *dummy-variabelen* worden gemaakte heet daarom ook wel *dummy-codering* en leidt tot het maken van een tabel met de naam *contrastmatrix*. Dit gebeurt automatisch door statistische software, zoals R.
+
+Voor een uitleg aan de hand van een voorbeeld wordt de dataset `Salaries` gebruikt (zie @kassambaraMachineLearningEssentials2018)
+
+## Data
+
+Dataset `Salaries` uit package `carData` bevat het academisch salaris van negen maanden voor 2008-2009 bevat voor assistent-professoren, universitair hoofddocenten en professoren aan een universiteit in de VS. De gegevens zijn verzameld om o.a. de salarisverschillen tussen mannelijke en vrouwelijke faculteitsleden te controleren.
+
+**Variabelen**
+
+-   `rank` : rang
+-   `discipline`
+-   `yrs.since.phd`
+-   `yrs.service` : aantal dienstjaren
+-   `sex` : geslacht
+-   `salary` : salaris
+
+```{r}
+data("Salaries", package = "carData")
+head(Salaries)
+str(Salaries)
+```
+
+## Categorievariabelen met 2 niveaus
+
+Stel dat je het verschil in salaris tussen mannen en vrouwen wilt onderzoeken. De regressievergelijking zou er dan uit kunnen zien als
+
+$salary = b_0 + b1*sex$
+
+Echter `sex` is een categorievariabele met de waarden `Male` en `Female`. Daar kun je niet mee rekenen. Op basis van de variabele `sex` kun je een nieuwe dummy variabele maken met de waarde 1 voor `Male` en 0 voor `Female`. Wanneer je deze variabele als voorspeller in de regressievergelijking gaat gebruiken dan kan dat tot het volgende model leiden:
+
+-   $salary = b_0 + b1$ als de persoon mannelijk is
+-   $salary = b_0$ als de persoon vrouwelijk is
+
+De coëfficienten kun je dan als volgt interpreteren.
+
+-   $b_0$ is het gemiddelde salaris voor vrouwen
+-   $b_0 + b_1$ is het gemiddelde salaris voor mannen
+-   $b_1$ is het gemiddelde verschil in salaris tussen mannen en vrouwen
+
+Voor eenvoudige demonstratiedoeleinden modelleert het volgende voorbeeld het salarisverschil tussen mannen en vrouwen door een eenvoudig lineair regressiemodel te berekenen voor de dataset `Salaries`. R maakt automatisch dummy-variabelen.
+
+```{r}
+model <- lm(salary ~ sex, data = Salaries)
+summary(model)
+```
+
+-   101002 is het gemiddelde salaris voor vrouwen
+-   101002 + 14088 = 115090 is het gemiddelde salaris voor mannen
+
+De p-waarde voor de dummyvariabele `sexMale` is zeer significant, wat suggereert dat er statistisch gezien een verschil in gemiddeld salaris tussen de geslachten is.
+
+De functie `contrasts()` retourneert de codering die R heeft gebruikt om de dummy-variabelen te maken:
+
+```{r}
+contrasts(Salaries$sex)
+```
+
+R heeft een dummy-variabele `sexMale` gemaakt die de waarde 1 aanneemt als het geslacht Male is en anders 0. De beslissing om mannen als 1 te coderen en vrouwen als 0 (basline) is willekeurig en heeft geen effect op de regressieberekening, maar verandert wel de interpretatie van de coëfficiënten.
+
+## Categorievariabelen met meer dan 2 niveaus
+
+Over het algemeen wordt een categorische variabele met n niveaus omgezet in n-1 variabelen met elk twee niveaus. Deze n-1 nieuwe variabelen bevatten dezelfde informatie als de enkele variabele. Deze hercodering creëert een tabel met de naam **contrastmatrix**.
+
+Zo heeft in `salarie` de variabele `rank` drie niveaus: "AsstProf", "AssocProf" en "Prof". Deze variabele kan dummy worden gecodeerd in twee variabelen, een genaamd `AssocProf` en een `Prof`:
+
+-   Als `rank` = AssocProf, dan zou de kolom `AssocProf` worden gecodeerd met een 1 en `Prof` met een 0.
+-   Als `rank` = Prof, dan zou de kolom `AssocProf` worden gecodeerd met een 0 en `Prof` zou worden gecodeerd met een 1.
+-   Als `rank` = AsstProf, dan worden beide kolommen `AssocProf` en `Prof` gecodeerd met een 0.
+
+Deze dummy-codering wordt automatisch uitgevoerd door R. Voor demonstratiedoeleinden kun je de functie `model.matrix()` gebruiken om een contrastmatrix te maken voor een factorvariabele.
+
+```{r}
+res <- model.matrix(~rank, data = Salaries)
+head(res[,-1])
+```
+
+Bij het bouwen van een lineair model zijn er verschillende manieren om categorische variabelen te coderen, ook wel contrastcoderingssystemen genoemd. De standaardoptie in R is om het eerste niveau van de factor als referentie te gebruiken en de overige niveaus te interpreteren ten opzichte van dit niveau.
+
+::: callout-note
+ANOVA (variantieanalyse) is een speciaal geval van een lineair model waarbij de voorspellers categorische variabelen zijn. En omdat R begrijpt dat ANOVA en regressie beide voorbeelden zijn van lineaire modellen, kun je de klassieke ANOVA-tabel extraheren uit het regressiemodel met behulp van de R-basis `anova()` functie of de `Anova()`functie in package `car`. Over het algemeen is de functie `Anova()` aan te raden omdat deze automatisch voor ongebalanceerde ontwerpen zorgt.
+:::
+
+Resultaten voor een meervoudig regressiemodel.
+
+```{r}
+model2 <- lm(salary ~ yrs.service + rank + discipline + sex, data = Salaries)
+car::Anova(model2)
+```
+
+Wanneer je ook rekening houdt met andere variabelen (`yrs.service`, `rank` en `discipline`) zul je zien dat de categorische variabele `sex` niet langer significant geassocieerd is met de variatie in `salary` tussen individuen. Belangrijke variabelen zijn `rank` en `discipline`.
+
+Als je de contrasten van de categorische variabele wilt interpreteren, gebruik dan de volgende opdracht.
+
+```{r}
+summary(model2)
+```
+
+Zo is te zien dat het afkomstig zijn uit discipline B (toegepaste afdelingen) significant geassocieerd is met een gemiddelde stijging van 13473,38 in salaris in vergelijking met discipline A (theoretische afdelingen).
+
+::: callout-note
+Sommige categorische variabelen hebben geordende niveaus. Deze kunnen worden geconverteerd naar numerieke waarden, gerangschikt van laag naar hoog.
+:::

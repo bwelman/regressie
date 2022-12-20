@@ -1,0 +1,90 @@
+# Logistische regressie op data in tabelvorm
+
+Bron: "Introductory Statistics with R", Peter Dalgaard, paragraaf 13.2
+
+In this section, we analyze the example concerning hypertension from Altman (1991, p. 353). First, we need to enter data, which is done as follows:
+
+```{r}
+neeja <- c("Nee","Ja")
+mydata <- data.frame(roken = gl(n=2, k=1, length=8, labels = neeja),
+					 obesitas = gl(n=2, k=2, length=8, labels = neeja),
+					 snurken = gl(n=2, k=4, length=8, labels = neeja),
+					 man.tot = c(60,17,8,2,187,85,51,23),  # totaal aantal mannen
+					 man.hyp = c(5,2,1,0,35,13,15,8))      # aantal mannen met hypertensie
+mydata
+```
+
+R kan logistische regressieanalyses voor tabelgegevens op twee verschillende manieren uitvoeren. Bij de eerste manier moet je de respons specificeren als een matrix, waarbij de ene kolom het aantal "zieken" is en de andere het aantal "gezonde" (of "succes" en "mislukking", afhankelijk van de context). In dit geval dus met hypertensie en zonder hypertensie.
+
+```{r}
+hyp.tbl <- cbind(mydata$man.hyp, mydata$man.tot - mydata$man.hyp)
+hyp.tbl
+```
+
+Nu kun je het logistische regressiemodel specificeren.
+
+```{r}
+model <- glm(hyp.tbl ~ roken + obesitas + snurken, 
+			 family = binomial(link = "logit"), data = mydata)
+model
+```
+
+::: callout-note
+De andere manier om een logistisch regressiemodel te specificeren, is door het aandeel mislukkingen in elke cel te geven:
+```{r}
+#| eval: false
+prop.hyp <- mydata$man.hyp /mydata$man.tot
+glm(prop.hyp ~ roken + obesitas + snurken, 
+	family = binomial(link = "logit"), data = mydata, weights = man.tot)
+```
+
+Het is noodzakelijk om weights te geven omdat R niet kan zien op hoeveel waarnemingen een proportie is gebaseerd.
+:::
+
+Voor wat gedetailleerder uitvoer:
+
+```{r}
+summary(model)
+```
+
+**Deviance Residuals**
+
+```{r}
+model %>% residuals(type="deviance")
+```
+
+Dit is de bijdrage van elke cel van de tabel aan de afwijking (deviance) van het model (de afwijking komt overeen met de kwadratensom in lineaire normaalmodellen), met een teken dat de waarneming groter of kleiner is dan verwacht. Ze kunnen worden gebruikt om cellen te lokaliseren met een bijzonder slechte fit, maar je moet op je hoede zijn voor de interpretatie in schaarse tabellen.
+
+**Coefficients**
+
+
+
+## Boek Altman
+
+Bron: "Practical Statistics for Medical Research", Douglas G. Altman, pag. 353
+
+Table 12.19 summarizes some data relating hypertension to smoking, obesity and snoring in 433 men aged 40 or over. We can use logistic regression to see which of the factors smoking, obesity and snoring are predictive of hypertension. The full model is shown in Table 12.20(a). The significance of each variable can be assessed by treating z = b/se(b) as a standard Normal deviate; the P values are shown in the table. Clearly smoking has no association with hypertension, but both obesity and snoring seem to be independently prognostic. Omission of smoking (Table 12.20b) makes a minimal difference to the other coefficients. The analyses presented relate only to the main effects of obesity, smoking and snoring. Ideally we should also investigate the possibility that there may be an important interaction between two of these factors, for example that the effect of smoking is different for snorers and non-snorers. We can do this very simply if we have coded the binary variables as 0 or 1, by creating a new variable that is the product of the two variables that we are interested in. So we can create a new variable by multiplying together the values of smoking and snoring, and add this variable to the model. In fact, in this data set neither this nor any other interaction term is anywhere near to statistical significance.
+
+The regression equation for the model with three variables is
+
+$logit(p) = -2.378 - 0 .068x_1 + 0.695x_2 + 0.872x_3$.
+
+The estimated probability of having hypertension can be calculated from any combination of the three variables smoking, obesity and snoring. Specifically, we can compare the predicted probabilities for different groups, such as snorers and non-snorers. Setting $x_3$ first to $1$ and then to $0$ we have
+
+$logit(p_s) = - 2.378- 0.068x_1 + 0.695x_2 + 0.872$ and
+
+$logit(p_{ns}) = -2.378 - 0.068x_1 + 0.695x_2$
+
+where $x_1$ and $x_2$ are the coded values of smoking and obesity. Thus we have $logit(p_s) - logit(p_{ns}) = 0.872$. As noted earlier, this expression is the log odds ratio, so that the odds ratio for hypertension associated with snoring is $e^{0.872} = 2.39$. We can therefore obtain the estimated odds ratio for a variable directly from its regression coefficient. The interpretation of the odds ratio was discussed in section 10.11.2. We can consider it as a measure of the estimated probability, or risk, of hypertension among snorers in relation to the risk among non-snorers.
+
+Clearly for any binary variable the odds ratio can be estimated from the regression coefficient $b$ as $OR = e^b$. We can use the standard error of $b$ to get a confidence interval for $b$ and thus for $e^b$. The standard error of the regression coefficient for snoring was 0.398 (Table 12.20a) and a confidence interval is obtained by taking $b$ to have an approximately Normal sampling distribution. A 95% confidence interval for $b$ is thus given by
+
+$0.872 - (1.96 X 0.398)$ to $0.872 + (1.96 X 0.398)$
+
+that is, from 0.09 to 1.65. The 95% confidence interval for the odds ratio is thus from $e^{0.09}$ to $e^{1.65}$, that is, from 1.10 to 5.22. We are thus 95% sure that the risk of hypertension in snorers compared with non-snorers lies in the range 1.1 to 5 .2, which is rather a wide range, but just excludes the value 1.0 that indicates no increased risk.
+
+![](table-12-19.png)
+
+![](table-12-20.png)
+
+![](table-12-21.png)

@@ -1,0 +1,443 @@
+# Voorbeelden
+
+```{r}
+#| results: "asis"
+#| echo: false
+source("_common.R")
+```
+
+## inkomen-ervaring
+
+In het volgende voorbeeld [@buijsStatistiekOmMee1991, pag. 303] wordt het verband onderzocht tussen het inkomen (x €1000) en het aantal jaren ervaring van een groep managers.
+
+```{r}
+#| label: fig-ink-erv-data
+#| fig-cap: "Relatie tussen inkomen en aantal jaren ervaring."
+
+mydata <- data.frame(ervaring = c(5, 10, 8, 15, 12), inkomen = c(60, 80, 90, 120, 100))
+# spreidingsdiagram
+plot(inkomen ~ ervaring, data = mydata,
+	 xlab = "Ervaring (jaren)", ylab = "Inkomen (x €1000)")
+# lineair model
+model <- lm(inkomen ~ ervaring, data = mydata)
+summary(model)
+```
+
+De regressievergelijking wordt dus $\text{inkomen} = 34.828 + 5.517\times\text{ervaring}$
+
+De geschatte waarden (berekend volgens de regressievergelijking) en residuen zijn
+
+```{r}
+#| label: fig-ink-erv-fitted
+model$fitted.values
+model$residuals
+```
+
+```{r}
+#| label: fig-ink-erv-residu
+#| fig-cap: "Residuen bij lineair model Inkomen-Ervaring."
+plot(model$residuals, 
+	 main = "Residuen model Inkomen-Ervaring", ylab = "Residuen")
+abline(h = mean(model$residuals))
+```
+
+Je kunt zien dat de residuen willekeurig verdeeld zijn en het gemiddelde nagenoeg 0 is.
+
+## women
+
+De in R ingebouwde dataset `women` bevat de gemiddelde lengte (in) en gewicht (lb) voor Amerikaanse vrouwen in de leeftijd 30-39 jaar.
+
+```{r}
+#| label: fig-women-data
+#| fig-cap: "Relatie tussen lengte en gewicht."
+model_women <- lm(weight ~ height, data = women)
+plot(women$height, women$weight, xlab = "lengte (in)", ylab = "gewicht (lb)")
+abline(model_women)
+summary(model_women)
+```
+
+```{r}
+#| layout-ncol: 2
+#| label: fig-womenresidu
+#| fig-cap: "Residuen bij lineair model Lengte-Gewicht"
+#| fig-subcap: 
+#|   - "Residuals - Fitted values"
+#|   - "Normal Q-Q"
+#|   - "Scale-Location"
+#|   - "Residuals - Leverage"
+
+plot(model_women)
+```
+
+## kinderlengte
+
+Van 12 kinderen is de leeftijd (jaren) en lengte (cm bepaald). Maak een model waarbij de lengte verklaard wordt uit de leeftijd.
+
+```{r}
+#| label: fig-kind-data
+#| fig-cap: "Relatie tussen lengte en leeftijd van 12 kinderen."
+
+kind <- data.frame(leeftijd = seq(18,29),
+    lengte = c(76.1,77.0,78.1,78.2,78.8,79.7,79.9,81.1,81.2,81.8,82.8,83.5))
+# spreidingsdiagram
+plot(lengte ~ leeftijd, data = kind,
+	 xlab = "Leeftijd (maanden)", ylab = "Lengte (cm)")
+```
+
+Het model wordt $\text{lengte} = b_0 + b_1\times\text{leeftijd}$
+
+```{r}
+#| label: kind-model
+kind.model <- lm(lengte ~ leeftijd, data = kind)
+summary(kind.model)
+```
+
+De regressievergelijking wordt dus $\text{lengte} = 64.9283 + 0.635\times\text{leeftijd}$.
+
+Het model wordt nu uitgebreid door ook het aantal broers en zussen (variabele `broerzus`) in de formule op te nemen. het model wordt dan
+
+$\text{lengte} = b_0 + b_1\times\text{leeftijd} + b_2\times\text{broerzus}$
+
+```{r}
+#| label: kind2-model
+kind2 <- kind %>% mutate(broerzus = c(1, 2, 3, 2, 0, 1, 5, 0, 1, 4, 1, 5))
+kind2.model <- lm(lengte ~ leeftijd + broerzus, data = kind2)
+summary(kind2.model)
+```
+
+De coëfficient voor de nieuwe verklarende variabele `broerzus` is negatief. Voor elke broer/zus meer neemt de lengte met 0.02 cm af.
+
+Voor `leeftijd` is de p-waarde significant, deze is dus een goede voorspeller voor `lengte`. Maar de p-waarde voor `broerzus` (het aantal broers en zussen) is niet significant, deze variabele past dus niet goed in het model.
+
+## sparen
+
+```{r}
+#| label: fig-sparen-data
+#| fig-cap: "Voorbeeld sparen met relatie tussen Spaargeld en Inkomen."
+
+sparen <- read.csv("data/inkomen-spaargeld.csv")
+head(sparen)
+plot(Spaargeld ~Inkomen, data = sparen)
+```
+
+-   uitkomstvariabele: `Spaargeld`
+-   voorspelvariabele: `Inkomen`
+
+Algemene vorm regressievergelijking: $Spaargeld = b_0 + b_1 * Inkomen$
+
+Een lineaire relatie is in de grafiek duidelijk zichtbaar.
+
+```{r}
+#| label: sparen-model
+model.sparen <- lm(Spaargeld ~ Inkomen, data = sparen)
+summary(model.sparen)
+```
+
+De vergelijking van de regressielijn wordt dan $Spaargeld = -10990 + 0.297 * Inkomen$
+
+De p-waarde voor Inkomen is significant (\< 0.05) en dus is de variabele significant voor het voorspellen van Spaargeld.
+
+*Adjusted R-squared: 0.9915* houdt in dat het model 99% van de variatie in de gegevens verklaart.
+
+**Diagnostische grafieken**
+
+```{r}
+#| layout-ncol: 2
+#| label: fig-sparen-diagnoses
+#| fig-cap: "Diagnostische grafieken lineair model Sparen-Inkomen."
+#| fig-subcap: 
+#|   - "Residuals - Fitted values"
+#|   - "Normal Q-Q"
+#|   - "Scale-Location"
+#|   - "Residuals - Leverage"
+
+plot(model.sparen)
+```
+
+-   De grafiek *Residuals-Fitted* laat een gebogen patroon zien. Dit zou kunnen betekenen dat je een beter model kunt krijgen door een kwadratische term aan het model toe te voegen.
+-   De grafiek *Residuals-Leverage* laat zien dat waarneming 22 een grote invloed op het model heeft. Dit zou kunnen betekenen dat je waarneming 22 uit moet sluiten voor het maken van een model.
+
+Je hebt nu drie keuzes:
+
+1.  Keur de opname van waarneming 22 goed en houd het model zoals het is.
+2.  Maak een nieuw model en neem daarin een kwadratische term op.
+3.  Sluit waarneming 22 uit en maak een nieuw model.
+
+De laatste twee keuzes worden verder geanalyseerd.
+
+### Model met kwadratische term {.unnumbered}
+
+Regressievergelijking: $Spaargeld = b_0 + b_1*Inkomen + b_2*Inkomen^2$
+
+Om in R een variabele $x^2$ te maken moet je deze definieren met `I(x^2)`.
+
+Een alternatief is met gebruik van de polynoomfunctie `poly(x, degree=2, raw = TRUE)`. Deze laatste heeft als voordeel dat je eenvoudiger hogere graads polynomen kunt maken.
+
+```{r}
+#| label: sparen-model2
+model2.sparen <-  lm(Spaargeld ~ Inkomen + I(Inkomen^2), data = sparen)
+# model2.sparen <-  lm(Spaargeld ~ poly(Inkomen, degree=2, raw = TRUE), data = sparen)
+summary(model2.sparen)
+```
+
+```{r}
+#| layout-ncol: 2
+#| label: fig-sparen-model2-diagnoses
+#| fig-cap: "Diagnostische grafieken voor het model met een kwadratische term."
+#| fig-subcap: 
+#|   - "Residuals - Fitted values"
+#|   - "Normal Q-Q"
+#|   - "Scale-Location"
+#|   - "Residuals - Leverage"
+
+plot(model2.sparen)
+```
+
+De diagnostische grafieken zijn nu veel beter. Residuen zijn bijna horizontaal en goed verspreid. Verspreiding is bijna uniform en geen enkele punt heeft een teveel aan leverage. De Q-Q grafiek laat echter zien dat enkele punten niet op de Normaal lijn staan, maar dat kan acceptabel zijn.
+
+### Model met uitsluiting waarneming {.unnumbered}
+
+Waarneming 22 wordt uitgesloten.
+
+```{r}
+#| label: sparen21-model
+sparen21 <- sparen[1:21,]
+model.sparen21 <-  lm(Spaargeld ~ Inkomen, data = sparen21)
+summary(model.sparen21)
+```
+
+```{r}
+#| layout-ncol: 2
+#| label: fig-sparen21-model-diagnoses
+#| fig-cap: "Diagnostische grafieken voor het model met uitsluiting waarneming."
+#| fig-subcap: 
+#|   - "Residuals - Fitted values"
+#|   - "Normal Q-Q"
+#|   - "Scale-Location"
+#|   - "Residuals - Leverage"
+
+plot(model.sparen21)
+```
+
+Alle diagnostische grafieken lijken niet goed, ze zijn zelfs slechter dan het oorspronkelijke model.
+
+### Conclusie {.unnumbered}
+
+Tot zo ver komt het model met de kwadratische term het beste voort uit de analyse van de diagnostische grafieken.
+
+## druk-temperatuur
+
+In dit voorbeeld wordt de relatie tussen druk en temperatuur onderzocht.
+
+```{r}
+#| label: fig-druktemp-data
+#| fig-cap: "Relatie Druk - Temperatuur"
+
+druktemp <- data.frame(temp = seq(from = 10, to = 100, by = 10), 
+					   druk = c(18.5, 24.9, 30.3, 43.7, 80.1, 118.5, 169.9, 228.3, 302.7,385.1))
+# lineair model
+model1 <- lm(druk ~ temp, data = druktemp)
+# Spreidingsdiagram met regressielijn
+plot(druk ~ temp, data = druktemp)
+abline(reg = model1)
+summary(model1) # samenvatting model
+```
+
+Beide $R^2$ waarden zijn goed. Idealiter zouden de residuen in een grafiek er willekeurig uit moeten zien.
+
+```{r}
+#| label: fig-druktemp-model1-residu
+#| fig-cap: "Residuen bij het lineair model druk-temperatuur."
+plot(model1$residuals, pch = 16, col = "red", 
+	 main = "Residuen Druk~Temperatuur", ylab = "Residuen")
+```
+
+Je ziet dat het gemiddelde wel ongeveer nul is, maar de waarden vertonen geen willekeurig karakter, het diagram ziet er als een parabool uit. Dat betekent dat er misschien een verborgen patroon is dat niet door het lineaire model wordt meegenomen. wat je nu kunt doen is de variabele transformeren of een term toevoegen, bijv. $x^2, x^3, ln(x), ln(x+1), \sqrt(x), \frac{1}{x}, exp(x)$.
+
+::: callout-note
+Vanwege het paraboolkarakter van de residuen wordt een kwadratische term toegevoegd.
+:::
+
+Om verwarring te voorkomen wordt de hoofdletter I voor de transformatie gezet.
+
+```{r}
+#| label: druktemp-model2
+model2 <- lm(druk ~ temp + I(temp^2),  data = druktemp)
+summary(model2)
+```
+
+De p-waarden zijn nu veel kleiner geworden, De $R^2$-waarden zijn bijna gelijk aan 1 geworden. Dus het model is behoorlijk verbeterd. Van dit nieuwe model wordt nu ook een grafiek van de residuen gemaakt.
+
+```{r}
+#| label: fig-druktemp-model2-residu
+#| fig-cap: "Residuen bij lineair model Lengte~Leeftijd waaraan een kwadratische term is toegevoegd."
+plot(model2$residuals, pch = 16, col = "red", 
+	 main = "Druk~Temperatuur model met kwadratische term", ylab = "Residuen")
+```
+
+Er is nu geen patroon te zien, de residuen zijn behoorlijk willekeurig. Het model is nu goed.
+
+## economiedata
+
+De dataset `economiedata.csv` bevat een gefingeerde verzameling economische gegevens met de variabelen `Jaar`, `Maand`, `Rentepercentage` en `Werkloosheidspercentage`. Maak indien mogelijk een lineair model van de `Aandelenindex` op basis van `Rentepercentage` en `Werkloosheidspercentage`.
+
+-   uitkomstvariabele
+    -   `Aandelenindex`
+-   voorspelvariabelen
+    -   `Rentepercentage`
+    -   `Werkloosheidspercentage`
+
+**Data**
+
+```{r}
+#| label: economie-data
+economiedata <- read.csv("data/economiedata.csv")
+head(economiedata)
+```
+
+Allereerst wordt visueel beoordeeld of er een (lineaire) relatie is tussen de afhankelijke variabele en elk van de onafhankelijke variabelen afzonderlijk.
+
+```{r}
+#| label: fig-aandelen-rente
+#| fig-cap: "Relatie tussen aandelenindex en rentepercentage."
+plot(Aandelenindex ~ Rentepercentage, data = economiedata)
+```
+
+Er is een positief lineair verband te zien, als het Rentepercentage omhoog gaat, gaat ook de Aandelenindex omhoog.
+
+```{r}
+#| label: aandelen-werkloosheid
+#| fig-cap: "Relatie tussen aandelenindex en werkloosheidspercentage."
+plot(Aandelenindex ~ Werkloosheidspercentage, data = economiedata)
+```
+
+Er is een negatief lineair verband te zien, als het Werkloosheidspercentage omhoog gaat, gaat de Aandelenindex omlaag.
+
+**Model**
+
+```{r}
+#| label: economie-model
+model <- lm(Aandelenindex ~ Rentepercentage + Werkloosheidspercentage, 
+			data = economiedata)
+summary(model, correlation = TRUE) # met extra een matrix van de correlaties
+```
+
+## luchtkwaliteit
+
+Dit voorbeeld is geïnspireerd door een artikel in Data Science Blog [@doringInterpretingLinearPrediction2018] en gebruikt de in package `datasets` aanwezige gegevensverzameling `airquality`. Deze dataset bevat metingen van de luchtkwaliteit in New York van mei tot september 1973. Er zijn 153 waarnemingen van 6 variabelen:
+
+-   `Ozone` - gemiddelde hoeveelheid ozon in parts per billion (ppb)
+
+-   `Solar.R` - zonnestraling in Langleys (lang)
+
+-   `Wind` - gemiddelde windsnelheid in miles per hour (mph)
+
+-   `Temp` - maximale dagelijkse temperatuur in graden Fahrenheit op La Guardia Airport.
+
+-   `Month` - maand (nummer 1-12)
+
+-   `Day` - dag ( nummer 1-31)
+
+Voor de analyse kunnen maand en dag worden weggelaten. Verder worden de waarnemingen met ontbrekende waarden verwijderd.
+
+```{r}
+#| label: aq-data
+goed <- complete.cases(airquality)
+aqdata <- airquality[goed,] %>%
+	select(Ozone, Solar.R, Wind, Temp)
+str(aqdata)
+```
+
+**Onderzoeksvraag**
+
+Kun je het ozonniveau voorspellen op basis van zonnestraling, windsnelheid en temperatuur?
+
+**Verkenning data**
+
+Om te zien of de aannames van het lineaire model geschikt zijn voor de beschikbare gegevens, worden de correlaties tussen de variabelen bekeken: een scatterplot en de correlatiecoëfficienten.
+
+```{r}
+#| label: fig-aq-correlaties
+#| fig-cap: "Correlaties tussen de variabelen."
+plot(aqdata)
+cor(aqdata)
+```
+
+Conclusies
+
+-   `Ozone` heeft een negatieve correlatie met `Wind`.
+
+-   `Ozone` heeft een positievecorrelatie met `Temp`.
+
+Het zou dus mogelijk moeten zijn om een lineair model te maken dat het ozonniveau voorspelt met de kemerken.
+
+**Splitsing in training en test set**
+
+```{r}
+#| label: aq-datasplitsing
+set.seed(123)
+trainRijnummers <- createDataPartition(y = aqdata$Ozone, p=0.8, list = FALSE)
+trainData <- aqdata[trainRijnummers, ]
+testData <- aqdata[-trainRijnummers, ]
+```
+
+**Lineair model**
+
+```{r}
+#| label: aq-linmodel
+model <- lm(Ozone ~ Solar.R + Wind + Temp, data = trainData)
+model.samenvatting <- summary(model)
+model.samenvatting
+```
+
+De mediaan van de residuen is `r median(model$residuals)`, wat suggereert dat het model over het algemeen wat hogere ozonwaarden voorspelt dan waargenomen. De grote maximumwaarde geeft echter aan dat sommige uitbijtervoorspellingen ook veel te laag zijn
+
+::: callout-note
+Residu = waargenomen - verwacht. Ofwel verwacht = waargenomen - residu. Omdat de mediaanwaarde ongeveer -4 is, is de verwachte waarde = waargenomen waarde + 4.
+:::
+
+**Residuen**
+
+Kijken naar getallen als mediaan en maximum voor de residuen kan een beetje abstract zijn. Wanneer je de verwachte waarden uitzet tegen de waargenomen waarden krijg je een betere indruk van de kwaliteit van het model.model
+
+```{r}
+#| label: fig-aq-residuen
+#| fig-cap: "Verwachte waarden voor trainData op basis van de regressielijn vs de waargenomen waarden, met daarbij de residuen als vertikale lijnstukjes."
+residuen <- model$residuals  # alternatief: residuals(model)
+waarnemingen <- trainData$Ozone
+verwachtingen <- model$fitted.values
+waardenbereik <- range(verwachtingen, waarnemingen)
+plot(verwachtingen ~ waarnemingen,
+	 xlim = waardenbereik, ylim = waardenbereik)
+abline(0, 1, col = "red")
+segments(waarnemingen, verwachtingen, waarnemingen, verwachtingen+residuen)
+```
+
+::: {.callout-important appearance="simple"}
+In de grafiek is te zien dat er ook negatieve ozonwaarden voorspeld worden. Dit kan natuurlijk niet omdat ozonconcentraties niet onder 0 kunnen komen. In een later stadium zal daarom een beter model gemaakt moeten worden waarbij dat niet gebeurt,
+:::
+
+**Coëfficienten**
+
+```{r}
+#| label: aq-model-coefficienten
+model$coefficients  # alternatief: coefficients(model)
+```
+
+-   De intercept van het model heeft een vrij lage waarde. Dit is de waarde die het model voorspelt wanneer de waarden van alle voorspelvariabelen nul zijn.
+
+-   De lage coëfficiënt voor `Solar.R` geeft aan dat zonnestraling geen belangrijke rol speelt bij het voorspellen van ozonniveaus, wat niet als een verrassing komt omdat het in de verkennende analyse geen grote correlatie met het ozonniveau liet zien.
+
+-   De coëfficiënt voor `Temp` geeft aan dat de ozonniveaus hoog zijn als de temperatuur hoog is (er vormt zich dan sneller ozon).
+
+-   De coëfficiënt voor `Wind` geeft aan dat de ozonniveaus laag zullen zijn voor hogere windsnelheden (de ozon zal dan worden weggeblazen).
+
+De overige waarden die bij de coëfficiënten horen, geven informatie over de statistische zekerheid van de schattingen.
+
+```{r}
+model.samenvatting$coefficients
+```
+
+::: callout-tip
+Voor een verbeterd model zie @doringFindingSuitableLinear2018
+:::

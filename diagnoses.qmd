@@ -1,0 +1,219 @@
+# Diagnostische grafieken {#sec-diagnoses}
+
+```{r}
+#| results: "asis"
+#| echo: false
+source("_common.R")
+```
+
+Bron: [Understanding Diagnostic Plots for Linear Regression Analysis](http://data.library.virginia.edu/diagnostic-plots/)
+
+## Standaard diagnostische grafieken {.unnumbered}
+
+R heeft een zestal ingebouwde diagnostische grafieken voor lineaire regressie.
+
+1.  Residuals vs Fitted
+2.  Normal Q-Q
+3.  Scale-Location
+4.  Cook's distance
+5.  Residuals vs Leverage
+6.  Cook's dist vs Leverage
+
+R kan deze grafieken produceren wanneer je de functie `plot()` uitvoert op een object van een lineair `lm` model. In feite wordt dan de functie `plot.lm()` uitgevoerd. Het gewenste grafieknummer kun je specificeren met argument `which=`. Wanneer het argument `which` wordt weggelaten worden standaard de grafieken 1, 2, 3 en 5 gemaakt. Het is dan aan te raden vooraf een tekenframe van 2x2 te specificeren met `par(mfrow=c(2,2))`.
+
+De interpretatie van de diagnostische grafieken wordt aan de hand van het voorbeeld INCOME-SAVINGS behandeld.
+
+```{r}
+#| layout-ncol: 2
+#| label: fig-sparendiagnoses
+#| fig-cap: "De vier diagnostische grafieken die standaard getoond worden."
+#| fig-subcap: 
+#|   - "Residuals - Fitted values"
+#|   - "Normal Q-Q"
+#|   - "Scale-Location"
+#|   - "Residuals - Leverage"
+
+sparen <- read_csv("data/inkomen-spaargeld.csv", show_col_types = FALSE)
+model.sparen = lm(Spaargeld ~ Inkomen , data = sparen)
+
+# Diagnostische grafiekens
+plot(model.sparen)
+```
+
+Je ziet vaak nummers bij sommige punten in deze grafieken. Dat zijn extreme waarden op basis van elk criterium en geidentificeerd door de rijnummers in de gegevensverzameling. Wanneer sommige nummers in alle vier de grafieken verschijnen is er reden om de waarneming individueel te bekijken. Is er iets speciaals met dit punt aan de hand? Of is er een fout gemaakt bij het invoeren van de gegevens?
+
+### Grafiek 1: Residuals vs Fitted {.unnumbered}
+
+In deze grafiek worden de residuen uitgezet tegen de voorspelde waarden. Idealiter mag deze grafiek geen patroon vertonen. Wanneer je wel een patroon (curve, U-vorm) ziet dan suggereert dit niet-lineariteit in de dataset. Als je gelijk verdeelde residuen rond een horizontale lijn vindt zonder duidelijke patronen, is dat een goede indicatie dat je lineaire relaties hebt. Als je bovendien een trechtervormig patroon ziet, dan suggereert dit heteroskedasticiteit, d.w.z. dat de fouttermen een niet-constante variantie hebben.
+
+```{r}
+#| label: fig-sparendiag1
+#| fig-cap: "Diagnostische grafiek Residuals-Fitted."
+plot(model.sparen, which = 1)
+```
+
+In dit voorbeeld kun je zien dat de residuen een gebogen patroon hebben (parabool?). Dit zou kunnen betekenen dat je een beter model kunt krijgen door een kwadratische term aan het model toe te voegen.
+
+### Grafiek 2: Normal Q-Q {.unnumbered}
+
+Met deze grafiek kun je zien of residuen normaal verdeeld zijn. Het maakt gebruik van gestandaardiseerde waarden van residuen. Idealiter zou deze grafiek een rechte lijn moeten vertonen. Vind je een gekromde, vervormde lijn, dan hebben je residuen een niet-normale verdeling (problematische situatie).
+
+```{r}
+#| label: fig-sparendiag2
+#| fig-cap: "Diagnostische grafiek Normal Q-Q."
+plot(model.sparen, which = 2)
+```
+
+In dit voorbeeld volgen de punten de stippellijn goed, behalve waarneming 22. De residuen van het model voldoen hiermee aan de test voor een normale verdeling.
+
+### Grafiek 3: Scale-Location {.unnumbered}
+
+Met deze grafiek (ook wel *Spread-Location* genoemd) kun je zien of residuen gelijkelijk zijn verdeeld over de reeksen van voorspellers. Zo kun je de aanname van gelijke variantie (homoscedasticiteit) controleren. Het is goed als je een horizontale lijn ziet met gelijke (willekeurige) spreidingspunten.
+
+```{r}
+#| label: fig-sparendiag3
+#| fig-cap: "Diagnostische grafiek Scale-Location."
+plot(model.sparen, which = 3)
+```
+
+Een horizontale rode lijn is ideaal en geeft aan dat de residuen een uniforme variatie hebben binnen het bereik van de verklarende variabele. Naarmate de residuen zich verder van elkaar verspreiden, gaat de rode lijn omhoog.
+
+In dit voorbeeld is tot ongeveer 100000 sprake van homoscedasticiteit (dus uniforme variatie), daarna wordt het heteroscedasticiteit.
+
+### Grafiek 4: Cook's distance {.unnumbered}
+
+Cook's Distance, vaak aangeduid met $D_i$, wordt gebruikt om invloedrijke gegevenspunten te identificeren die een negatief effect kunnen hebben op uw regressiemodel.
+
+In wezen doet Cook's Distance één ding: het meet hoeveel alle berekende waarden in het model veranderen wanneer gegevenspunt $i$ wordt verwijderd.
+
+Een gegevenspunt met een grote waarde voor Cook's Distance geeft aan dat het de berekende waarden sterk beïnvloedt. Een algemene vuistregel is dat elk punt met een Cook's Distance groter dan 4/n (waarbij n het totale aantal gegevenspunten is) als een uitbijter wordt beschouwd.
+
+Het is belangrijk op te merken dat Cook's Distance vaak wordt gebruikt als een manier om invloedrijke gegevenspunten te identificeren. Het feit dat een gegevenspunt invloedrijk is, betekent niet dat het noodzakelijkerwijs moet worden verwijderd. Controleer eerst of het gegevenspunt gewoon onjuist is vastgelegd of dat er iets vreemds aan het gegevenspunt is dat op een interessante bevinding kan wijzen.
+
+```{r}
+#| label: fig-sparendiag4
+#| fig-cap: "Diagnostische grafiek Cook's distance."
+plot(model.sparen, which = 4)
+```
+
+Met deze grafiek worden de Cook's afstanden voor elke waarneming bepaald en in een grafiek uitgezet.
+
+Duidelijk is te zien dat waarneming 22 afwijkt van de rest en hierdoor mogelijk het model slecht beinvloedt. Afhankelijk van de oorzaak kun je het punt verwijderen of de waarde corrigeren. Maar het is natuurlijk ook mogelijk dat het een geldig punt is.
+
+::: callout-note
+Alternatief
+
+`plot(cooks.distance(model.sparen), pch = 16, col = "blue")`
+:::
+
+### Grafiek 5: Residuals vs Leverage {.unnumbered}
+
+Voordat op deze grafiek wordt ingegaan, eerst wat uitleg over de begrippen Influence en Leverage.
+
+-   **Influence**: Bij de Influence (invloed) van een waarneming moet je denken aan hoeveel de voorspelde scores zouden veranderen als de waarneming wordt uitgesloten. De Cook afstand is een vrij goede maat voor de invloed van een waarneming.
+-   **Leverage**: De Leverage (macht, kracht) van een waarneming is gebaseerd op de mate waarin de waarde van de waarneming op de onafhankelijke variabele verschilt van het gemiddelde van de onafhankelijke variabele. Hoe meer de leverage van een waarneming, des te meer potentie heeft dit punt in termen van influence.
+
+```{r}
+#| label: fig-sparendiag5
+#| fig-cap: "Diagnostische grafiek Residuals-Leverage."
+plot(model.sparen, which = 5)
+```
+
+Deze grafiek helpt je om invloedrijke waarnemingen te vinden als ze er zijn. Niet alle uitschieters zijn invloedrijk in de lineaire regressie-analyse. Zelfs als de gegevens extreme waarden hebben, zijn ze mogelijk niet van invloed op het bepalen van een regressielijn. Dat betekent dat de resultaten niet veel anders zouden zijn als ze in- of uitgesloten zouden worden bij de analyse. Ze volgen in de meeste gevallen de trend en ze doen er niet echt toe; ze zijn niet invloedrijk. Aan de andere kant kunnen sommige gevallen zeer invloedrijk zijn, zelfs als ze binnen een redelijk bereik van de waarden lijken te liggen. Dit kunnen extreme gevallen zijn voor een regressielijn en kunnen de resultaten wijzigen wanneer ze zouden worden uitgesloten bij de analyse. Een andere manier om het te zeggen is dat ze in de meeste gevallen niet aansluiten bij de trend.
+
+In deze grafiek zijn de gestippelde rode lijnen de Cooks afstanden. De interessegebieden zijn de gebieden buiten de stippellijn in de rechterbovenhoek of rechteronderhoek. De punten hierin kunnen een grote invloed hebben op het regressiemodel. Dergelijke punten hebben een hoge leverage of de potentie voor beinvloeding van het model is groter wanneer je die punten uitsluit.
+
+In dit voorbeeld heeft waarneming 22 grote invloed op het regressiemodel.
+
+### Grafiek 6: Cook's dist vs Leverage {.unnumbered}
+
+```{r}
+#| label: fig-sparendiag6
+#| fig-cap: "Diagnostische grafiek Cook's dist vs Leverage."
+plot(model.sparen, which = 6)
+```
+
+### Samenvatting {.unnumbered}
+
+De diagnostische grafieken geven informatie over het model en de gegevens. Het kan zijn dat het gebruikte model niet de beste manier is om de gegevens te begrijpen en dat er waardevolle informatie in de data is achtergebleven. In dat geval wil je misschien terug naar je theorie en hypothesis. Is er werkelijk een lineaire relatie tussen de onafhankelijke variabele(n) en de afhankelijke variabele? Misschien moet er bijvoorbeeld een kwadratische term worden opgenomen. Of geeft een logaritmische transformatie het verschijnsel dat je wilt modelleren beter weer. Of er is misschien een belangrijke variabele die niet in het model is opgenomen? Of misschien waren de gegevens systematisch vertekend (systematische ruis) bij het verzamelen hiervan, waardoor je daar dan een nieuwe methode voor moet ontwerpen.
+
+Voor verdere verdieping zie [Unusual Observations - Outlier, Leverage, and Influential Points](https://www.theopeneducator.com/doe/Regression/outlier-leverage-influential-points)
+
+## Niet grafische methoden
+
+1.  **Durbin Watson Statistiek (DW)** - Deze test wordt gebruikt om autocorrelatie te controleren. De waarde ligt tussen 0 en 4. Een DW=2 waarde vertoont geen autocorrelatie. Een waarde tussen 0 \< DW \< 2 impliceert echter positieve autocorrelatie, terwijl 2 \< DW \< 4 negatieve autocorrelatie impliceert.
+
+2.  V**ariantie-inflatiefactor (VIF)** - Deze statistiek wordt gebruikt om multicollineariteit te controleren. VIF \<=4 impliceert geen multicollineariteit, maar VIF \>=10 suggereert hoge multicollineariteit. Als alternatief kunt u ook naar de tolerantiewaarde (1/VIF) kijken om de correlatie in IV's te bepalen. Daarnaast kun je ook een correlatiematrix maken om collineaire variabelen te bepalen.
+
+3.  **Breusch-Pagan / Cook Weisberg-Test** - Deze test wordt gebruikt om de aanwezigheid van heteroskedasticiteit te bepalen. Als je p \< 0,05 vindt, verwerp je de nulhypothese en concludeer je dat heteroskedasticiteit aanwezig is.
+
+## Ideaal model {.unnumbered}
+
+Bron: [Regression diagnostic plots, Chouldechova](https://www.andrew.cmu.edu/user/achoulde/94842/homework/regression_diagnostics.html)
+
+Voor het maken van vergelijkingen met een ideaal model wordt een gegevensverzameling gemaakt welke perfect voldoet aan alle standaardeisen voor lineaire regressie. De data wordt gemaakt voor de lineaire vergelijking
+
+$$y_i = 3 + 0.1 x + \epsilon_i,$$
+
+met $i = 1, 2, \ldots, 1000$, met $\epsilon_i \sim N(0, 3)$.
+
+De x-waarden worden gegenereerd uit een uniforme verdeling \[0, 100\]
+
+```{r}
+#| label: fig-ideaal
+#| fig-cap: "Grafiek data ideaal lineair model met regressielijn."
+n <- 500      # aantal waarnemingen
+set.seed((12345))
+ideaal <- data.frame(x = runif(n, min = 0, max = 100)) %>%
+	mutate(y = 3 + 0.1 * x + rnorm(n, sd = 3))
+
+# ideale lineaire model
+model.ideaal <- lm(y ~ x, data = ideaal)
+
+plot(ideaal, main = "ideale regressie")
+abline(model.ideaal, col = "blue") # regressielijn toevoegen
+```
+
+De scatterplot toont een perfecte lineaire regressie: de punten lijken willekeurig verspreid over de lijn, zonder waarneembare niet-lineaire trends of variabiliteitsveranderingen.
+
+### Residual vs. Fitted {.unnumbered}
+
+```{r}
+#| label: fig-ideaal-residu
+#| fig-cap: "Residuals-fitted voor het ideale model."
+plot(model.ideaal, which = 1)
+```
+
+De rode lijn kun je zien als een soort regressielijn voor de residuen en deze toont de gemiddelde waarde van de residuen voor elke berekende waarde (fitted value). Deze rode lijn is vlak en wijst er op dat er geen waarneembare niet-lineaire trend in de residuen is. Verder lijken de residuen even variabel te zijn over het gehele bereik van passende waarden. Er is geen indicatie van niet-constante variantie.
+
+### Normal Q-Q {.unnumbered}
+
+De Normal QQ-grafiek helpt je om te beoordelen of de residuen ruwweg normaal verdeeld zijn. Als de residuen er verre van normaal uitzien, dan heb je misschien. In het bijzonder, als de residuen de neiging hebben om groter in omvang te zijn dan wat je zou verwachten van de normale verdeling, dan kunnen de p-waarden en betrouwbaarheidsintervallen te optimistisch zijn.
+
+```{r}
+#| label: fig-ideaal-qq
+#| fig-cap: "Normal QQ grafiek voor het ideale model."
+plot(model.ideaal, which = 2)
+```
+
+De residuen vormen hier een goede match met de diagonale lijn. De residuen lijken dus normaal verdeeld te zijn.
+
+### Scale-Location {.unnumbered}
+
+```{r}
+#| label: fig-ideaal-scale
+#| fig-cap: "Scale-Location grafiek voor het ideale model."
+plot(model.ideaal, which = 3)
+```
+
+### Residuals vs Leverage {.unnumbered}
+
+Er is niet een echte definitie van een uitschieter. een mogelijke definitie is dat elk punt dat niet goed in het model past (een groot residu heeft) en significant het model beinvloedt (een grote leverage), een uitschieter is. Hier komt de Residual-Leverage grafiek van pas.
+
+```{r}
+#| label: fig-ideaal-leverage
+#| fig-cap: "Residuals-Leverage grafiek voor het ideale model."
+plot(model.ideaal, which = 5)
+```
+
+Deze grafiek is een goed voorbeeld dat er geen bewijs voor uitschieters is. De gestippelde Cook's afstandslijnen zijn zelfs niet aanwezig in de grafiek. Geen van de punten komt in de buurt van zowel een groot residu als een grote leverage.

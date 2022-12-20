@@ -1,0 +1,17 @@
+# Generalized linear model (GLM)
+
+GLM is een generalisatie van gewone lineaire regressie die responsvariabelen mogelijk maakt met andere foutverdelingsmodellen dan een normale verdeling zoals de Gauss-verdeling.
+
+`glm (formula, family, data, weights, subset, ...)`
+
+?
+
+<https://www.datascienceblog.net/post/machine-learning/interpreting_generalized_linear_models/>
+
+<https://www.educba.com/glm-in-r/>
+
+<https://sscc.wisc.edu/sscc/pubs/glm-r/>
+
+<https://www.datacamp.com/tutorial/generalized-linear-models>
+
+<https://bookdown.org/ltupper/340f21_notes/deviance-and-residuals.html>

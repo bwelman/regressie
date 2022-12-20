@@ -1,0 +1,172 @@
+# Smarket
+
+Bron: <https://www.datacamp.com/community/tutorials/logistic-regression-R>
+
+Het te gebruiken voorbeeld is de [Smarket database]() uit package `ISLR`. De gegevens vormen het dagelijkse percentage van de aandelenindex van S&P500 tussen 2001 en 2005.
+
+```{r}
+library(ISLR2)
+```
+
+## verkenning gegevens
+
+```{r}
+names(Smarket)
+head(Smarket)
+summary((Smarket))
+```
+
+De respons variabele wordt `Direction` welke aangeeft dat laat zien of de markt sinds de vorige dag hoger of lager was.
+
+## Visualisatie
+
+De numerieke variabelen worden stuk voor stuk bekeken. Een histogram is nuttig om een beeld van de verdeling van een variabele te krijgen.
+
+```{r}
+par(mfrow = c(2,4))
+for (i in 1:8) {
+    hist(Smarket[,i], main = names(Smarket)[i])
+}
+```
+
+Het is erg moeilijk om te zien, maar de meeste variabelen laten een Gaussiaanse of dubbele Gauss-verdeling zien.
+
+Een andere manier is via box-whisker diagrammen
+
+```{r}
+par(mfrow = c(2,4))
+for (i in 1:8) {
+    boxplot(Smarket[,i], main = names(Smarket)[i])
+}
+par(mfrow = c(1,1))
+```
+
+Je kunt zien dat de `Lags` en `Today` allemaal een vergelijkbaar bereik hebben. Verder is er geen teken van uitbijters.
+
+Begonnen wordt met het berekenen van de correlatie tussen elk paar numerieke variabelen. Deze paarsgewijze correlaties kunnen worden uitgezet in een correlatiematrixgrafiek om een idee te geven van welke variabelen samen veranderen.
+
+```{r}
+library(corrplot)
+correlations <- cor(Smarket[,1:8])
+corrplot(correlations, method = "circle")
+```
+
+Er is een punt-weergave gebruikt waarbij blauw staat voor positieve correlatie en rood voor negatief. Hoe groter de stip, hoe groter de correlatie. Je kunt zien dat de matrix symmetrisch is en dat de diagonaal perfect positief gecorreleerd is omdat het de correlatie van elke variabele met zichzelf laat zien. Helaas is geen van de variabelen gecorreleerd met elkaar.
+
+De functie `pairs()` maakt spreidingsdiagrammen van de variabelen uit `Smarket`. In dit geval is `Direction`, de binaire responsvariabele, de kleurindicator.
+
+```{r}
+pairs(Smarket, col = Smarket$Direction)
+```
+
+Het lijkt erop dat hier niet veel correlatie aanwezig is. De klassenvariabele is afgeleid van de variabele `Today`, dus `Up` en `Down` lijken een verdeling te maken. Anders dan dat, er gebeurt niet veel.
+
+Laten we eens kijken naar de dichtheidsverdeling van elke variabele opgesplitst volgens de waarde van `Direction`. Net als bij het spreidingsdiagram hiervoor kan een dichtheidsverdeling via `Direction` helpen bij de scheiding tussen `Up` en `Down`. het kan ook helpen om de overlapping in waarden van `Direction` voor een variabele te begrijpen.
+
+```{r}
+library(caret)
+x <- Smarket[,1:8]
+y <- Smarket[,9]
+scales <- list(x = list(relation = "free"), y = list(relation = "free"))
+featurePlot(x = x, y = y, plot = "density", scales = scales)
+```
+
+U kunt zien dat de waarden voor `Direction` elkaar overlappen voor al deze variabelen, wat betekent dat het moeilijk is om `Up` en `Down` te voorspellen op basis van slechts één of twee variabelen.
+
+# Logistisch regressiemodel
+
+Je gebruikt nu de functie `glm`.
+
+```{r}
+glm.fit <- glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume, data = Smarket, family = binomial)
+summary(glm.fit)
+```
+
+Geen van de coefficienten lijkt hier significant. je krijgt ook de \* Null deviance\* (de deviatie voorhet model met alleen het gemiddelde) en de *Residual deviance* (de deviatie voor het model met alle predictoren). Er is een klein verschil tussen deze twee, samen met 6 vrijheidsgraden.
+
+Met de functie `predict()` en argument `type = "response"` kun je voorspellingen maken voor de training data.
+
+We kijken naar de eerste vijf waarnemingen, welke allemaal dicht bij 50% liggen.
+
+```{r}
+glm.probs <- predict(glm.fit,type = "response")
+glm.probs[1:5]
+```
+
+Nu gaan voorspellingen gemaakt worden of de markt omhoog of omlaag zal gaan. Daarvoor worden uit de kansen classificaties gemaakt met een drempelwaarde van 0.5.
+
+```{r}
+glm.pred <- ifelse(glm.probs > 0.5, "Up", "Down")
+```
+
+De resultaten worden nu vergeleken met de originele waarden en ook wordt het gemiddelde hiervan bepaald.
+
+```{r}
+table(glm.pred, Smarket$Direction)
+mean(glm.pred == Smarket$Direction)
+```
+
+De aantallen voor Down-Down en Up-Up (op de diagonaal) zijn de correcte classificaties, alle andere zijn fout. En dat zijn er nogal wat. Het gemiddelde geeft een fractie van 0.52
+
+## Training en Test verzamelingen
+
+How can you do better? Dividing the data up into a training set and a test set is a good strategy.
+
+```{r}
+# Make training and test set
+train = Smarket$Year < 2005
+glm.fit <- glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume, 
+               data = Smarket, 
+               family = binomial, 
+               subset = train)
+
+glm.probs <- predict(glm.fit, 
+                    newdata = Smarket[!train,], 
+                    type = "response")
+
+glm.pred <- ifelse(glm.probs > 0.5, "Up", "Down")
+```
+
+Let's look at this code chunk in detail:
+
+-   train is equal to the year less than 2005. For all the year less than 2005, you'll get a true; otherwise, I'll get a false.
+-   You then refit the model with glm.fit(), except that the subset is equal to 'train', which means that it fits to just the data in year less than 2005.
+-   You then use the predict() function again for glm.probs to predict on the remaining data in year greater or equal to 2005. For the new data, You give it Smarket, indexed by !train (!train is true if the year is greater or equal to 2005). You set type to "response" to predict the probabilities.
+-   Finally, you use the ifelse() function again for glm.pred to make Up and Down variable.
+
+You now make a new variable to store a new subset for the test data and call it Direction.2005. The response variable is still Direction. You make a table and compute the mean on this new test set:
+
+```{r}
+Direction.2005 = Smarket$Direction[!train]
+table(glm.pred, Direction.2005)
+mean(glm.pred == Direction.2005)
+```
+
+Ha, you did worse than the previous case. How could this happen?
+
+**Solving Overfitting**
+
+Well, you might have overfitted the data. In order to fix this, you're going to fit a smaller model and use Lag1, Lag2, Lag3 as the predictors, thereby leaving out all other variables. The rest of the code is the same.
+
+```{r}
+# Fit a smaller model
+glm.fit = glm(Direction ~ Lag1 + Lag2 + Lag3, data = Smarket, family = binomial, subset = train)
+glm.probs = predict(glm.fit, newdata = Smarket[!train,], type = "response")
+glm.pred = ifelse(glm.probs > 0.5, "Up", "Down")
+table(glm.pred, Direction.2005)
+mean(glm.pred == Direction.2005)
+```
+
+Well, you got a classification rate of 59%, not too bad. Using the smaller model appears to perform better.
+
+Lastly, you will do a summary() of glm.fit to see if there are any signficant changes.
+
+```{r}
+summary(glm.fit)
+```
+
+Nothing became significant, at least the P-values are better, indicating an increase in prediction of performance.
+
+Conclusion
+
+So that's the end of this R tutorial on building logistic regression models using the glm() function and setting family to binomial. glm() does not assume a linear relationship between dependent and independent variables. However, it assumes a linear relationship between link function and independent variables in logit model I hope you have learned something valuable!

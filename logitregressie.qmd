@@ -1,0 +1,510 @@
+# Logistische regressie
+
+```{r}
+#| results: "asis"
+#| echo: false
+source("_common.R")
+```
+
+## Inleiding
+
+Logistische regressie is net als bij lineaire regressie een methode om een verband tussen een afhankelijke variabele en een of meer onafhankelijke varabelen te modelleren.
+
+Bij lineaire regressie is de afhankelijke variabele kwantitatief, interval/ratio geschaald. Bij logistische regressie is de afhankelijke variabele kwalitatief, een categorie dus. Wanneer deze variabele maar twee uitkomsten heeft, dan is het een *binaire* of *dichotome* variabele.
+
+Het voorspellen van de waarde voor een kwalitatieve variabele kan worden aangeduid als *classificeren*, het indelen in een categorie of klasse. Aan de andere kant proberen de methodes die vaak voor classificatie gebruikt worden eerst de kansen voor elke mogelijke categoriewaarde te voorspellen, als basis voor het maken van de classificatie.
+
+Het logistische model gaat uit van kansen, of beter gezegd van kansverhoudingen: **odds**. Dit is de kans op de ene uitkomst gedeeld door de kans op de andere uitkomst. Een odds heeft een bereik van 0 tot oneindig.
+
+::: callout-note
+Synoniemen voor logistische regressie zijn binaire logistische regressie, binomiale logistische regressie, logit model.
+:::
+
+## Logistisch model
+
+In @fig-wisslaagkans zie je het verband tussen het aantal minuten dat je aan huiswerk wiskunde besteed hebt en de slaagkans voor de wiskundetoets.
+
+De kans om voor de wiskunde toets te slagen is aanvankelijk nogal laag, die zit heel dicht bij nul. Dus als je heel weinig tijd aan je huiswerk besteed dan slaag je niet voor deze wiskundetoets. Die slaagkans gaat bij ca. 30 min. huiswerk stijgen en vanaf 40 min zie je de slaagkans vrij lineair en snel omhoog gaan totdat je ongeveer bij 70 min. bent en dan is de kans dat je die wiskundetoets haalt bijna gelijk aan 100%. Dit is de beroemde *S-curve* vanwege de vorm.
+
+::: {#fig-wiskunde-huiswerktijd layout-ncol=2}
+
+![Slaagkans Wiskunde - huiswerktijd](images/huiswerk-slaagkans.png){#fig-wisslaagkans}
+
+![Slaagkans Wiskunde - huiswerktijd met lineaire trendlijn](images/huiswerk-slaagkans-trendlijn.png){#fig-wisslaagkanstrendlijn}
+
+Verband tussen het aantal minuten dat je aan huiswerk wiskunde besteed hebt en de slaagkans voor de wiskundetoets.
+:::
+
+Dat je het verband tussen slaagkans en huiswerk niet kunt modelleren met gewone lineaire regressie is te zien in @fig-wisslaagkanstrendlijn, waar een lineaire trendlijn is aangebracht. Hierin zijn een aantal opmerkelijke zaken te zien:
+
+-   Wanneer je geen huiswerk maakt (huiswerk = 0), dan is er een negatieve kans. Dit kan natuurlijk niet.
+-   De kans om de wiskundetoets te halen kan groter dan 1 zijn. Dit kan evenmin.
+-   In de eerste helft van de grafiek geeft de trendlijn een overschatting van de kans.
+-   In de tweede helft van de grafiek geeft de trendlijn een onderschatting van de kans.
+-   De trendlijn heeft een intercept van -0,229 (negatief!) en een richtingscoefficient (rc) van 0,014
+
+Deze regressielijn past niet bij de werkelijke observaties. Dus de gewone lineaire regressie is niet geschikt om dit soort kansen te modelleren.
+
+Bij de logistische regressie wordt een speciale kanscurve gebruikt, waarbij de geschatte kans nooit onder de nul komt en ook nooit groter dan 1 wordt. Dat maakt deze kanscurve zeer geschikt om variabelen te analyseren die alleen 0 en 1 kennen als waarde. Bij een toets zou dit kunnen zijn:
+
+-   0 = toets niet gehaald
+-   1 = toets wel gehaald
+
+De uitkomst van een logistische regressie is niet direct de categoriewaarde (hier wel of niet), maar de kans op een bepaalde categoriewaarde. Deze kans ligt tussen 0 en 1. Het is aan de onderzoeker om op basis van die kans aan te geven in welke categorie de waarneming valt, dus wat het omkeerpunt van de kans voor categorie 0 of categorie 1 is. Standaard is deze kans 50%, dus p=0,50.
+
+Het logistische model gaat dus uit van kansen en eigenlijk meer van kansverhoudingen: **odds**
+
+In het voorbeeld is $\text{odds} = \frac{p_{wel}} {p_{niet}} = \frac{p_{wel}} {1 - p_{wel}}$
+
+$p_{wel}$ heeft een bereik van $[0, 1]$ waardoor de odds een bereik heeft van $[0, \infty]$.
+
+Omdat er liever niet gewerkt wordt met een variabele die naar oneindig loopt, wordt de natuurlijke logaritme van de odds genomen. Deze wordt de **log odds** of **logit** genoemd.
+
+Wanneer de onafhankelijke variabelen $X_1, X_2, X_3, ...$ zijn dan heeft het logistische model de volgende vorm:
+
+$$ln(odds) = ln(\frac{p_{wel}} {p_{niet}}) = b_0 + b_1X_1 + b_2X_2 + ...$$
+
+Dit lijkt veel op een gewoon regressiemodel: $b_0$ is het intercept en $b_1, b_2, ...$ zijn de parameters die het effect van $X_1, X_2, ...$ aangeven.
+
+En geschreven als kansen
+
+$$\text{odds} =\frac{p_{wel}} {p_{niet}} = e^{(b_0 + b_1X_1 + b_2X_2 + ...)}$$
+
+$$p_{wel} = \frac{e^{(b_0 + b_1X_1 + b_2X_2 + ...)}}{e^{(b_0 + b_1X_1 + b_2X_2 + ...)} + 1}$$
+
+$$p_{niet} = \frac{1}{e^{(b_0 + b_1X_1 + b_2X_2 + ...)} + 1}$$
+
+De kansen $p_{wel}$ en $p_{niet}$ zijn dus afhankelijk van de variabelen $X_1, X_2, ...$, maar deze afhankelijkheid is niet lineair. De regressielijn heeft de vorm van een S-curve.
+
+::: {#fig-scurves layout-ncol="2"}
+![Negatief effect X](images/S-negatief.png)
+
+![Positief effect X](images/S-positief.png)
+
+S-curves voor positieve en negatieve effecten.
+:::
+
+### Odds Ratio
+
+De odds ratio is de verhouding tussen twee odds.
+
+Voorbeeld. In een mand zitten 4 Rode ballen en 1 Groene bal. Je haalt nu 1 bal uit de mand.
+
+$P_{rood} = 4/5 = 0,8; P_{groen}=1/5=0,2$
+
+$Odds_{rood} = P_{rood}/P_{niet rood} = 0,8/0,2 = 4$
+
+$Odds_{groen} = P_{groen}/P_{niet groen} = 0,2/0,8 = 0.25$
+
+De odds ratio voor het trekken van een rode bal vergeleken met een groene bal is $Odds_{rood} / Odds_{groen} = 4 / 0,25 =16$.
+
+Dus de odds voor het trekken van een rode bal is 16 keer groter dan de odds voor het trekken van een groen bal.
+
+Onderzoekers gebruiken odds ratio's in verschillende situaties wanneer ze de kansen willen analyseren van twee gebeurtenissen die kunnen plaatsvinden.
+
+Een veelvoorkomend voorbeeld is het bepalen of een nieuwe behandeling de kansen van een patiënt op een goed resultaat vergroot in vergelijking met een bestaande behandeling.
+
+@tbl-medicijn geeft het aantal patiënten weer dat een gunstig of slecht gezondheidsresultaat had als gevolg van hun medicijn.
+
+| Behandeling           | Positief resultaat | Negatief resultaat |
+|-----------------------|--------------------|--------------------|
+| Nieuw medicijn        | 60                 | 40                 |
+| Bestaande behandeling | 42                 | 58                 |
+
+: Resultaten medicijnbehandeling {#tbl-medicijn}
+
+Voor patienten die met het nieuwe medicijn behandeld zijn is $Odds_{positief} = 0,60/0,40 = 1,5$
+
+Voor patienten die met de bestaande behandeling is $Odds_{positief} = 0,42/0,58 = 0,7241379$
+
+Odds ratio voor nieuw medicijn: $Odds Ratio = 1,5 / 0,7241379 = 2.071429$
+
+Dus de odds op een positief resultaat met het nieuwe medicijn is 2 keer groterdan voor de bestaande behandeling.
+
+## Voorbeeld wiskundetoets
+
+Bronnen Manfred te Grotenhuis (Radboud Universiteit):
+
+-   [Deel 1: Inleiding logistische regressie-analyse](https://www.youtube.com/watch?v=pPvyhRBmnYI)
+-   [Deel 2: Multivariate logistische regressie](https://www.youtube.com/watch?v=wjcapMU9umM)
+
+Als databestand wordt het SPSS bestand `wiskunde.sav` gebruikt, beschikbaar gesteld door Manfred te Grotenhuis. Dit zijn echte data, afkomstig uit de V.S.
+
+```{r}
+# Lees data in en converteer value labels naar factors
+library(haven)
+wiskunde <- read_sav("data/wiskunde.sav") %>% 
+	as_factor(only_labelled = TRUE)
+
+# Inspectie van de data
+str(wiskunde)
+head(wiskunde)
+
+```
+
+Het al dan niet slagen voor de wiskundetoets afgezet tegen sexe.
+
+```{r}
+table(wiskunde$voldoende, wiskunde$sexe)
+```
+
+Een betere bij het college van Manfred aansluitende kruistabel krijg je met
+
+    library(gmodels)
+    CrossTable(wiskunde$voldoende, wiskunde$sexe, digits = 1, prop.r = FALSE, prop.t = FALSE, prop.chisq = FALSE, format = c("SPSS"))
+
+```{r kruistabel}
+library(janitor)
+wiskunde %>%
+	tabyl(voldoende, sexe) %>%
+	adorn_totals(where = c("row","col")) %>%
+	adorn_percentages(denominator = "col") %>%
+	adorn_pct_formatting(digits = 1) %>% 
+	adorn_ns(position = "front")
+```
+
+**Codering**
+
+Met de codering
+
+-   voldoende
+    -   0: wiskundetoets NIET gehaald
+    -   1: wiskundetoets wel gehaald
+-   sexe
+    -   0: man
+    -   1: vrouw
+
+Je kunt nu een odds uitrekenen voor de mannen en een odds voor de vrouwen
+
+$\text{odds(mannen)} = \frac{p1}{p0} = \frac{0,421}{0,579} = 0,727$
+
+Bij de mannen zijn naar verhouding MINDER voldoendes dan onvoldoendes.
+
+$\text{odds(vrouwen)} = \frac{p1}{p0} = \frac{0,381}{0,619} = 0,616$
+
+Bij de vrouwen zijn er naar verhouding nog minder voldoendes dan onvoldoendes vergeleken met de mannen.
+
+$\text{odds ratio}= \frac{odds(vrouwen)}{odds(mannen)} = \frac{0,616}{0,727} = 0,847$
+
+Dit getal geeft in feite het effect aan van het geslacht op het halen van de wiskundetoets. Als de oddsratio = 1 dan betekent dit dat zowel onder mannen als vrouwen de verhouding voldoende/onvoldoende gelijk is. Hier is de ratio kleiner dan 1, wat betekent dat onder de vrouwen minder voldoendes zijn dan onder de mannen. Met één getal, de odds ratio, kun je dus aangeven wat het effect is van het geslacht op het halen van de wiskundetoets.
+
+De logistische regressie-analyse kun je uitdrukken in termen van odds, maar ook in termen van **logitparameters**. Het enige wat je hoeft te doen is de natuurlijke logaritme te berekenen van de odds en de oddsratio.
+
+-   mannen: ln(0,727) = -0,319
+-   vrouwen: ln(0,616) = -0,485
+-   ln(0,847) = -0,166
+
+Samengevat
+
+-   mannen: odds = 0,727 en Logitparameter = -0,319
+-   vrouwen odds = 0,616 en Logitparameter = -0,485
+-   oddsratio (vrouwen/mannen) = 0,847 en Logitparameter = -0,166
+
+Merk op dat de drie logitparameters negatief zijn.
+
+Een deel van de getallen zie je terug bij de logistische regressie-analyse met R.
+
+```{r}
+logitmodel <- glm(voldoende ~ sexe, data = wiskunde, family = "binomial")
+summary(logitmodel)
+```
+
+Kolom "Estimate" is de kolom met de logitparameters.
+
+Je kunt deze coéfficienten ook uit de list halen met de functie `coef()`.
+
+```{r}
+coef(logitmodel)
+```
+
+En door hiervan de e-machten te nemen krijg je de odds.
+
+```{r}
+exp(coef(logitmodel))
+```
+
+Dat in de regel met de intercept de odds voor mannen staat en niet die voor vrouwen komt omdat de mannen gecodeerd zijn met de waarde 0. Net als bij gewone regressie is de intercept bepaald voor x=0. De regel voor intercept heeft daarom betrekking op mannen.
+
+0,847 is het effect van de variabele geslacht en dit effect is significant. In die zin dat mannen de toets iets gemakkelijker halen dan de vrouwen.
+
+Als je de codes van mannen en vrouwen omdraait, dus vrouwen met 0 codeert en mannen met 1, dan
+
+-   mannen: odds = 0,727 en Logitparameter = -0,319
+-   vrouwen odds = 0,616 en Logitparameter = -0,485
+
+Bij mannen zijn er naar verhouding MEER voldoendes dan onvoldoendes dan bij vrouwen: 0,727/0,616=1,18 (=odds ratio) 0,166
+
+Samenvattend
+
+Een odds geeft de verhouding aan tussen wel (p1) en niet (p0):
+
+-   als 1 dan zijn er evenveel wel als niet
+-   als \<1 dan meer niet als wel
+-   als \>1 dan meer wel als niet
+
+Een odds ratio geeft de verhouding aan tussen twee odds en drukt een effect uit:
+
+-   als 1 dan geen verband: de verhouding wel/niet is overal gelijk
+-   een odds ratio ligt tussen oneindig klein (kans op wel neemt af)
+-   en oneindig groot (kans op wel neemt toe)
+
+Een logitparameter geeft ook een effect weer:
+
+-   is het 0 dan geen effect
+-   is het negatief dan neemt de kans op wel af
+-   is het positief dan neemt de kans op wel toe
+
+Met logistische regressie kun je dus een binaire (dichotome) uitkomstvariabele relateren aan één of meerdere voorspelvariabelen. Er wordt gewerkt met kansverhoudingen. Niet de waarde van de afhankelijke variabele wordt gemodelleerd, maar de kans op die uitkomst.
+
+## Voorbeeld onderwijs
+
+Dit is een aardig voorbeeld van logistische regressie m.b.t. het onderwijs. Het voorbeeld wordt zowel uitgewerkt in R als in Excel.
+
+In R behoort logistische regressie tot de familie Generalized Linear Model (GLM).
+
+Bronnen:
+
+-   [UCLA](https://stats.idre.ucla.edu/r/dae/logit-regression/)
+-   [learningtree blog](https://blog.learningtree.com/how-to-apply-logistic-regression-using-excel/)
+
+Voor drie variabelen wordt bekeken of ze van invloed zijn om vanuit een bacheloropleiding toegelaten te worden tot de masteropleiding. Deze onafhankelijke voorspellende variabelen zijn:
+
+-   **gre** (Graduate Record Examination score), een gestandaardiseerde test in de V.S, welke voor de meeste masteropleidingen een vereiste is. 130 is de laagst mogelijke score en 170 de hoogste per sectie. Er zijn twee onderdelen (algemeen en vakspecifiek), dus gecombineerd loopt de score van 260 tot 340.
+-   **gpa** (Grade Point Average), een standaardmethode in de VS om te meten hoe succesvol de studie verlopen is. De score is een waarde uit het interval 0 t/m 4 punten waarbij 4 het beste is.
+-   **rank** (prestige van de bacheloropleiding), een gehele waarde uit het interval 1 (hoogste prestige) tot 4 (laagste prestige)
+
+Het al dan niet toegelaten worden tot de masteropleiding wordt bijgehouden in de afhankelijke variabele (respons variabele):
+
+-   **admit**, binair met waarden 0 (niet toegelaten) of 1 (toegelaten).
+
+Model: $$admit = b_0 + b_1 \times gre + b_2 \times gpa + b_3 \times rank$$
+
+Er is een databestand `binary.csv` met gegenereerde hypothetische data gemaakt.
+
+```{r}
+# data inlezen in dataframe
+schooldata <- read.csv("data/binary.csv")
+```
+
+```{r}
+# Overzicht van de data
+str(schooldata)
+head(schooldata)
+```
+
+De variabelen `gre`, `gpa` worden als continue variabelen behandeld. En variabele `rank` kan alleen maar de gehele waarden 1 t/m 4 aannemen. Omdat `rank` als een categorievariabele behandeld moet worden moet deze eerst omgezet worden naar het type `factor`.
+
+\|Voor vergelijking met de uitvoer in Excel kun je dat laatste misschien beter achterwege laten.
+
+```{r}
+# conversie variabele rank naar type factor
+schooldata$rank <- factor(schooldata$rank)
+# Statistische samenvatting van de variabelen
+summary(schooldata)
+skimr::skim(schooldata) # geeft ook standaarddeviatie en aantal NA's
+```
+
+Maak een logistic regressiemodel met de functie `glm()` (generalized linear model).
+
+```{r}
+logitmodel <- glm(admit ~ gre + gpa + rank, data = schooldata, family = "binomial")
+summary(logitmodel)
+```
+
+### Uitvoer
+
+**Deviance Residuals**
+
+Deze zijn een maat voor hoe goed het model past bij de data. Dit deel van de uitvoer toont de verdeling van de individuele residuen.
+
+**Coefficients**
+
+Dit gedeelte toont de coefficienten (onder Estimate), de standaardfouten, z-waarden (soms Wald z genoemd) en de bijbehorende p-waarden. Zowel **gre**, **gpa** als de drie termen voor **rank** zijn statistisch significant. De logistische regressiecoefficienten geven de verandering in de log odds van de uitvoervariabele bij een toename van 1 in de voorspellende variabele.
+
+-   Bij een toename met 1 voor **gre** neemt de log odds voor toelating/niet-toelating toe met 0.002264
+-   Bij een toename met 1 voor **gpa** neemt de log odds voor toelating/niet-toelating toe met 0.804038
+-   De indicator variabelen voor **rank** hebben een iets andere interpretatie. Bijvoorbeeld komend van een opleiding met rank 2 versus een opleiding met rank 1, wijzigt de log odds voor toelating met -0,675.
+
+### Betrouwbaarheidsintervallen
+
+Met de functie `confint()` kun je betrouwbaarheidsintervallen voor de coëfficienten krijgen. Voor logistische modellen zijn deze gebaseerd op de log-likelihood functie. Wil je je gebaseerd hebben op de standaardfouten dan moet je de methode `default` gebruiken.
+
+```{r}
+# Betrouwbaarheidsintervallen basis log-likelihood
+confint(logitmodel)
+# Betrouwbaarheidsintervallen basis standaardfouten
+confint.default(logitmodel)
+```
+
+| In het artikel staat nog meer.
+
+## Resources
+
+-   [How to apply Logistic Regression using Excel, Daniel Buskirk, 11-10-2017](https://blog.learningtree.com/how-to-apply-logistic-regression-using-excel/) , behandelt hetzelfde voorbeeld met admit, gre, gpa en rank
+-   [How to perform a Logistic Regression in R](https://www.r-bloggers.com/how-to-perform-a-logistic-regression-in-r/) , voorbeeld met Titanic dataset
+-   [Generalized Linear Models in R](https://www.theanalysisfactor.com/generalized-linear-models-glm-r-part4/) , er zijn meerdere artikelen in deze serie
+-   [How do I interpret odds ratios in logistic regression?](https://stats.idre.ucla.edu/other/mult-pkg/faq/general/faq-how-do-i-interpret-odds-ratios-in-logistic-regression/) en <https://stats.idre.ucla.edu/stata/faq/how-do-i-interpret-odds-ratios-in-logistic-regression/>
+-   [Real Statistics Logistic regression with Excel](http://www.real-statistics.com/logistic-regression/)
+
+## Hoe moet je odds ratios interpreteren in logistische regressie?
+
+Bron: <https://stats.idre.ucla.edu/other/mult-pkg/faq/general/faq-how-do-i-interpret-odds-ratios-in-logistic-regression/>
+
+Een logistisch regressiemodel stelt je in staat om een verband te leggen tussen een binaire uitkomstvariabele en een groep voorspellende variabelen. Het modelleert de logit-getransformeerde kans als een lineair verband met de voorspellende variabelen. Als
+
+-   $Y$ is de binaire uitkomstvariabele met waarden 0/1 (mislukking/succes)
+-   $p$ is de kans dat Y gelijk aan 1 is.
+-   $X_1, X_2, ...$ zijn de voorspellende variabelen
+
+dan worden de waarden van de parameters $b_0, b_1, ...$ geschat via de maximum likelihood methode voor de volgende vergelijking.
+
+$logit(p) = ln(odds) = ln(\frac{p}{1-p}) = b_0 + b_1 \times X_1 + b_2 \times X_2 + ...$
+
+Er volgen nu een aantal voorbeelden van logistische regressiemodellen. Het databestand kan gedownload worden via <https://stats.idre.ucla.edu/wp-content/uploads/2016/02/sample.csv> en is ook lokaal aanwezig. Het databestand bestaat uit 200 waarnemingen en de afhankelijk variabele is **hon** welke aangeeft of een student in een honours class zit of niet. De kans op succes is de kans dat *hon = 1*.
+
+In de volgende uitwerkingen ligt de nadruk op de betekenis van de regressiecoëfficienten.
+
+```{r}
+# data inlezen in dataframe
+mydata <- read.csv("data/sample.csv")
+
+# Overzicht van de data
+str(mydata)
+head(mydata)
+
+# Statistische samenvatting van de variabelen
+summary(mydata)
+skimr::skim(mydata) # toont ook standaarddeviatie
+```
+
+### Logistische regressie zonder voorspellende variabelen
+
+Het eenvoudigste logistische regressiemodel is een model zonder voorspellende variabelen, dus $logit(p) = ln(\frac{p}{1-p}) = b_0$
+
+```{r}
+model1 <- glm(hon ~ 1, data = mydata, family = binomial(link = logit))
+summary(model1)
+logLik(model1) #LogLikelihood
+```
+
+De intercept van het model is de geschatte waarde van $ln(odds) = -1.1255$. En dus $odds = e^{-1.1255} = 0.3245$ en $p = \frac{0.3245}{0.3245 + 1} = 0.245$. Dus de overall kans om in een honors class te zitten (hon = 1) is 0.245.
+
+Deze waarde van $p$ kan ook de frequentietabel van de variabele `hon` worden afgeleid.
+
+```{r}
+tbl <- table(mydata$hon)
+cbind(tbl, round(prop.table(tbl), 4))
+```
+
+En in de samenvatting van de data zag je al dat `hon` een gemiddelde waarde van 0.245 had.
+
+### Logistische regressie met 1 dichotome voorspellende variabele
+
+Een vervolgstap op het vorige model is door een binaire voorspellende variabele aan het model toe te voegen. In dit geval de variabele **female** welke de waarden 0 ( geen vrouw, dus man) of 1 (vrouw) kan hebben. Dit geeft de volgende vergelijking voor het model:
+
+$$logit(p) = b_0 + b_1 \times female$$
+
+Een kruistabel van deze twee variabelen heeft het volgende resultaat.
+
+```{r}
+library(gmodels)
+CrossTable(mydata$hon , mydata$female, digits = 1, prop.r = FALSE, 
+		   prop.t = FALSE, prop.chisq = FALSE, format = c("SPSS"))
+```
+
+Hieruit kun je de odds voor mannen (female = 0) en vrouwen (female = 1) berekenen.
+
+odds(mannen) = 17/74 = 0.2297 en LN(odds) = -1.4709
+
+odds(vrouwen) = 32/77 = 0.4156 en LN(odds) = -0.8781
+
+odds ratio vrouwen / mannen = 0.4156 / 0.2297 = 1.8093 en LN(odds ratio) = 0.5928
+
+De odds voor vrouwen zijn ongeveer 81% hoger dan de odds voor mannen.
+
+De lineaire relatie wordt.
+
+```{r}
+model2 <- glm(hon ~ female, data = mydata, family = binomial(link = logit))
+summary(model2)
+logLik(model2) #LogLikelihood
+exp(coef(model2)) # odds ratio
+```
+
+De intercept -1.4709 is de logit voor mannen omdat dan de waarde wanneer de voorspellende variabele `female` gelijk aan 0 is.
+
+De coëfficient voor `female` is 0.5928 en is de log van de odds ratio tussen de groep vrouwen en de groep mannen.
+
+### Logistische regressie met 1 continue voorspellende variabele
+
+Een ander eenvoudig model is met 1 continue voorspellende variabele. In dit voorbeeld de variabele **math** voor de wiskunde scores. Dit geeft de volgende vergelijking voor het model:
+
+$$logit = b_0 + b_1 \times math$$
+
+```{r}
+model3 <- glm(hon ~ math, data = mydata, family = binomial(link = logit))
+summary(model3)
+logLik(model3) #LogLikelihood
+exp(coef(model3)) # odds ratio
+```
+
+In dit geval geeft intercept -9.79394 de log odds voor een student in de honor class met een math score van nul. Anders gezegd, de odds van een student in de honors class met een math score nul is $e{-9.79394} = 0.0000559$. Dit is een erg lage odds. Maar in de dataset is 33 de minimumwaarde van `math`. Dus de intercept correspondeert hier met een hypothetische waarde voor `math` van nul.
+
+Hoe moet je de coefficient van math interpreteren? Intercept en coefficient geven de volgende vergelijking:
+
+$$LN(\frac{p}{1-p}) = -9.79394 + 0.15634 \times math$$
+
+Voor bijvoorbeeld math =54 geeft dit
+
+$$LN(\frac{p}{1-p}) = -9.79394 + 0.15634 \times 54 = -1.35158$$
+
+En voor math score die 1 eenheid groter (55) is
+
+$$LN(\frac{p}{1-p}) = -9.79394 + 0.15634 \times55 = -1.19524$$
+
+een waarde die $-1.19524 - -1.35158 = 0.15634$ groter is. De coefficient voor math is dus het verschil in log odds.
+
+En $e^{0.15634} = 1.169224$ wat aangeeft dat verhoging van de math score met 1 eenheid een ongeveer 17% hogere odds geeft.
+
+### Logistische regressie meet meerdere voorspellende variabelen zonder interacties
+
+In het algemeen kun je meerdere voorspellende variabelen in een logistisch regressiemodel hebben.
+
+$$logit(p) = ln(\frac{p}{1-p}) = ln(odds) = b_0 + b_1 \times X_1 + b_2 \times X_2 + ... + b_k \times X_k$$
+
+Elke berekende waarde voor een coëfficient geeft de verwachte verandering in de log odds om in de honour klas te komen bij een verhoging met 1 voor de bijbehorende voorspellende variabele, waarbij de andere voorspellende variabelen constant gehouden worden. Een voorbeeld:
+
+$$logit = b_0 + b_1 \times math + b_2 \times female + b_3 \times read$$
+
+```{r}
+model4 <- glm(hon ~ math + female + read, data = mydata, family = binomial(link = logit))
+summary(model4)
+logLik(model4) #LogLikelihood
+```
+
+Je kunt de resultaten als volgt interpreteren. Wanneer de waarden voor `math` en `read` op een vaste waarde gehouden worden, dan wordt de odds voor vrouwen (female=1) om in een honor class te komen tegenover de odds voor mannen (female=0) $e^{0.97995} = 2.664323$. In procenten is de odds voor vrouwen 166% hoger dan de odds voor mannen. Analoge redeneringen kun je voor de andere coefficienten maken.
+
+### Logistische regressie met een interactieterm voor 2 voorspellende variabelen
+
+Wanneer een model interactieterm (en) van twee voorspellende variabelen heeft, probeert het te beschrijven hoe het effect van een voorspellende variabele afhangt van de andere voorspellende variabele. De interpretatie van de regressiecoëfficiënten wordt dan wat ingewikkelder.
+
+Een voorbeeld.
+
+$$logit = b_0 + b_1 \times female + b_2 \times math + b_3 \times female \times math$$
+
+```{r}
+model5 <- glm(hon ~ female + math + female*math, data = mydata, family = binomial(link = logit))
+summary(model5)
+logLik(model5) #LogLikelihood
+```
+
+Vanwege de interactieterm `female` met `math`, kun je niet langer een interpretatie geven van het effect van de variabele `female` terwijl je alle andere variabelen onveranderd houdt. Het slaat namelijk nergens op om `math` en `female * math` op een bepaalde waarde vast te zetten en toch toestaan dat `female` verandert van 0 in 1.
+
+In dit eenvoudige voorbeeld van een interactie tussen een binaire variabele en een continue variabele heb je in feite twee vergelijkingen, eentje voor mannen en eentje voor vrouwen.
+
+-   Mannen (female =0): $logit(p) = b_0 + b_2 \times math$
+-   vrouwen (female=1): $logit(p) = (b_0 + b_1) + (b_2 + b_3) \times math$
+
+Nu kan de de uitvoer van de logistische regressie naar deze twee vergelijkingen overgebracht worden. Zo kun je zeggen dat de coefficient voor `math` het effect van `math` is wanneer female=0. Meer expliciet kun je zeggen dat voor mannen een verhoging van `math` met 1, een verandering van log odds met 0.13 geeft.
+
+En voor de vrouwen geeft een verhoging van `math` met 1, een verandering van log odds met (.13 + .067) = 0.197. In termen van odds kun je zeggen dat voor mannen is $e^{0.13} = 1.14$ voor een verhoging van de `math` score met 1. En voor vrouwen is dit $e^{0.197}=1.22$. En de odds ratio (vrouwen -mannen) is de e-macht van de coefficient voor interactieterm \*\*female\*math\*\*, $\frac{1.22}{1.14}= e^{0.067}=1.07$.

@@ -1,0 +1,55 @@
+project:
+  type: book
+
+book:
+  title: "Regressie"
+  author: "Ben Welman"
+  date: today
+  description: "Regressie-analyse met R."
+  chapters:
+    - index.qmd
+    - linregressie.qmd
+    - voorbeelden.qmd
+    - catregressie.qmd
+    - correlatie.qmd
+    - logitregressie.qmd
+    - part: "Oefeningen"
+      chapters: 
+        - adult.qmd
+        - smarket.qmd
+  appendices: 
+    - diagnoses.qmd
+    - overfitting.qmd
+    - voorwaarden.qmd
+    - referenties.qmd
+
+bibliography: referenties.bib
+nocite: |
+  @*
+
+csl: "S:/programming/regressie/include/chemical-engineering-progress.csl"
+
+lang: nl
+
+execute: 
+  freeze: auto
+
+format:
+  html:
+    theme: 
+      - flatly
+      - include/custom.scss
+    fig-width: 6
+    fig-asp: 0.618
+    code-fold: false
+    link-external-icon: true
+    link-external-newwindow: true
+
+knitr:
+  opts_chunk:
+    echo: true
+    warning: false
+    message: false
+    cache: false
+
+editor: visual

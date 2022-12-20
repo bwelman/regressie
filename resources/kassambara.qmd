@@ -1,0 +1,65 @@
+# Kassambara datasets
+
+Datasets uit het boek "Machine Learning Essentials" van Alboukadel Kassambara.
+
+## swiss
+
+Dit is een ingebouwde dataset welke 5 sociaal-economische indicatoren beschrijft die rond 1888 werden waargenomen en die werden gebruikt om de vruchtbaarheidsscore van 47 zwitserse Franstalige provincies te voorspellen.
+
+```{r}
+data(swiss)
+head(swiss)
+```
+
+Variabelen:
+
+-   `Fertility` : gemeenschappelijke gestandaardiseerde vruchtbaarheidsmaat.
+-   `Agriculture` : % mannen betrokken bij landbouw als beroep.
+-   `Examination` : % dienstplichtigen met het hoogste cijfer voor legerexamen.
+-   `Education` : % onderwijs buiten de basisschool voor dienstplichtigen.
+-   `Catholic` : % 'katholiek' (in tegenstelling tot 'protestants').
+-   `Infant.Mortality`: levendgeborenen die minder dan 1 jaar leven.
+
+## Boston
+
+Dataset uit package `MASS` bevat gegevens van huizen in Boston en hun prijzen.
+
+```{r}
+data("Boston", package = "MASS")
+head(Boston)
+```
+
+Variabelen:
+
+-   `crim` : misdaadcijfer per hoofd van de bevolking per stad
+-   `zn` : aandeel van woongrond bestemd voor percelen van meer dan 25.000 sq.ft
+-   `indus` : aandeel niet-retail acres per gemeente
+-   `chas` : Charles River dummyvariabele (= 1 als landstreek grenst aan rivier; 0 anders)
+-   `nox` : concentratie stikstofoxiden (parts per 10 million)
+-   `rm` : gemiddeld aantal kamers per woning
+-   `age` : aandeel koopwoningen gebouwd vóór 1940
+-   `dis` : gewogen afstanden tot vijf arbeidsbureaus in Boston
+-   `rad` : index van bereikbaarheid radiale snelwegen
+-   `tax` : volledige onroerendgoedbelastingtarief per USD 10.000
+-   `ptratio` : leerling-leraar ratio per stad
+-   `black` : 1000(B - 0.63)\^2 waarbij B het aandeel zwarten per stad is
+-   `lstat` : percentage lagere status van de bevolking
+-   `medv` : mediaan waarde eigen woningen in USD 1000
+
+## Salaries
+
+Dataset `Salaries` uit package `car` bevat het academisch salaris van negen maanden voor 2008-09 bevat voor assistent-professoren, universitair hoofddocenten en professoren aan een universiteit in de VS. De gegevens zijn verzameld als onderdeel van de voortdurende inspanningen van de administratie van het college om de salarisverschillen tussen mannelijke en vrouwelijke faculteitsleden te controleren.
+
+```{r}
+data("Salaries", package = "carData")
+head(Salaries)
+```
+
+Variabelen
+
+-   `rank` : rang
+-   `discipline`
+-   `yrs.since.phd`
+-   `yrs.service` : aantal dienstjaren
+-   `sex` : geslacht
+-   `salary` : salaris
