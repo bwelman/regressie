@@ -118,7 +118,7 @@ Voor patienten die met de bestaande behandeling is $Odds_{positief} = 0,42/0,58 
 
 Odds ratio voor nieuw medicijn: $Odds Ratio = 1,5 / 0,7241379 = 2.071429$
 
-Dus de odds op een positief resultaat met het nieuwe medicijn is 2 keer groterdan voor de bestaande behandeling.
+Dus de odds op een positief resultaat met het nieuwe medicijn is 2 keer groter dan voor de bestaande behandeling.
 
 ## Voorbeeld wiskundetoets
 

@@ -17,7 +17,7 @@ R heeft een zestal ingebouwde diagnostische grafieken voor lineaire regressie.
 5.  Residuals vs Leverage
 6.  Cook's dist vs Leverage
 
-R kan deze grafieken produceren wanneer je de functie `plot()` uitvoert op een object van een lineair `lm` model. In feite wordt dan de functie `plot.lm()` uitgevoerd. Het gewenste grafieknummer kun je specificeren met argument `which=`. Wanneer het argument `which` wordt weggelaten worden standaard de grafieken 1, 2, 3 en 5 gemaakt. Het is dan aan te raden vooraf een tekenframe van 2x2 te specificeren met `par(mfrow=c(2,2))`.
+R kan deze grafieken produceren wanneer je de functie `plot()` uitvoert op een object van een lineair `lm` model. In feite wordt dan de functie `plot.lm()` uitgevoerd. Het gewenste grafieknummer kun je specificeren met argument `which=`. Wanneer het argument `which` wordt weggelaten worden standaard de grafieken 1, 2, 3 en 5 gemaakt. Hiervan zijn de eerste twee het belangrijkst, maar de laatste twee kunnen goed helpen bij het identificeren van uitschieters en het niet-lineair zijn.
 
 ## Ideaal model
 
@@ -118,15 +118,11 @@ plot(lm.ideaal, which = 4)
 
 ### Residuals vs Leverage
 
-Er is niet een echte definitie van een uitschieter. Een mogelijke definitie is dat elk punt dat niet goed in het model past (een groot residu heeft) en significant het model beinvloedt (een grote leverage), een uitschieter is. Hier komt de Residual-Leverage grafiek van pas.
+Leverage is een maatstaf voor de mate waarin een waarneming het passen (fit) van het model beinvloedt. Het is een ééncijferige samenvatting van hoe verschillend de fit van het model zou zijn als de betreffende waarneming niet mee zou tellen.
+
+Punten met een hoog residu (=slecht beschreven door het model) en een hoge leverage (= grote invloed op de modelfit) zijn uitschieters. Ze trekken het model weg van de rest van de gegevens en lijken niet echt te passen bij de rest van de gegevens.
 
 Deze grafiek helpt je om invloedrijke waarnemingen te vinden als ze er zijn. Niet alle uitschieters zijn invloedrijk in de lineaire regressie-analyse. Zelfs als de gegevens extreme waarden hebben, zijn ze mogelijk niet van invloed op het bepalen van een regressielijn. Dat betekent dat de resultaten niet veel anders zouden zijn als ze in- of uitgesloten zouden worden bij de analyse. Ze volgen in de meeste gevallen de trend en ze doen er niet echt toe; ze zijn niet invloedrijk. Aan de andere kant kunnen sommige gevallen zeer invloedrijk zijn, zelfs als ze binnen een redelijk bereik van de waarden lijken te liggen. Dit kunnen extreme gevallen zijn voor een regressielijn en kunnen de resultaten wijzigen wanneer ze zouden worden uitgesloten bij de analyse. Een andere manier om het te zeggen is dat ze in de meeste gevallen niet aansluiten bij de trend.
-
-::: callout-note
-**Influence**: Bij de Influence (invloed) van een waarneming moet je denken aan hoeveel de voorspelde scores zouden veranderen als de waarneming wordt uitgesloten. De Cook afstand is een vrij goede maat voor de invloed van een waarneming.
-
-**Leverage**: De Leverage (macht, kracht) van een waarneming is gebaseerd op de mate waarin de waarde van de waarneming op de onafhankelijke variabele verschilt van het gemiddelde van de onafhankelijke variabele. Hoe meer de leverage van een waarneming, des te meer potentie heeft dit punt in termen van influence.
-:::
 
 ```{r}
 #| label: fig-ideaal-leverage
