@@ -1,0 +1,116 @@
+## sparen
+
+```{r}
+#| label: fig-sparen-data
+#| fig-cap: "Voorbeeld sparen met relatie tussen Spaargeld en Inkomen."
+
+sparen <- read.csv("data/inkomen-spaargeld.csv")
+head(sparen)
+plot(Spaargeld ~Inkomen, data = sparen)
+```
+
+-   uitkomstvariabele: `Spaargeld`
+-   voorspelvariabele: `Inkomen`
+
+Algemene vorm regressievergelijking: $Spaargeld = b_0 + b_1 * Inkomen$
+
+Een lineaire relatie is in de grafiek duidelijk zichtbaar.
+
+```{r}
+#| label: sparen-model
+model.sparen <- lm(Spaargeld ~ Inkomen, data = sparen)
+summary(model.sparen)
+```
+
+De vergelijking van de regressielijn wordt dan $Spaargeld = -10990 + 0.297 * Inkomen$
+
+De p-waarde voor Inkomen is significant (\< 0.05) en dus is de variabele significant voor het voorspellen van Spaargeld.
+
+*Adjusted R-squared: 0.9915* houdt in dat het model 99% van de variatie in de gegevens verklaart.
+
+**Diagnostische grafieken**
+
+```{r}
+#| layout-ncol: 2
+#| label: fig-sparen-diagnoses
+#| fig-cap: "Diagnostische grafieken lineair model Sparen-Inkomen."
+#| fig-subcap: 
+#|   - "Residuals - Fitted values"
+#|   - "Normal Q-Q"
+#|   - "Scale-Location"
+#|   - "Residuals - Leverage"
+
+plot(model.sparen)
+```
+
+-   De grafiek *Residuals-Fitted* laat een gebogen patroon zien. Dit zou kunnen betekenen dat je een beter model kunt krijgen door een kwadratische term aan het model toe te voegen.
+-   De grafiek *Residuals-Leverage* laat zien dat waarneming 22 een grote invloed op het model heeft. Dit zou kunnen betekenen dat je waarneming 22 uit moet sluiten voor het maken van een model.
+
+Je hebt nu drie keuzes:
+
+1.  Keur de opname van waarneming 22 goed en houd het model zoals het is.
+2.  Maak een nieuw model en neem daarin een kwadratische term op.
+3.  Sluit waarneming 22 uit en maak een nieuw model.
+
+De laatste twee keuzes worden verder geanalyseerd.
+
+### Model met kwadratische term {.unnumbered}
+
+Regressievergelijking: $Spaargeld = b_0 + b_1*Inkomen + b_2*Inkomen^2$
+
+Om in R een variabele $x^2$ te maken moet je deze definieren met `I(x^2)`.
+
+Een alternatief is met gebruik van de polynoomfunctie `poly(x, degree=2, raw = TRUE)`. Deze laatste heeft als voordeel dat je eenvoudiger hogere graads polynomen kunt maken.
+
+```{r}
+#| label: sparen-model2
+model2.sparen <-  lm(Spaargeld ~ Inkomen + I(Inkomen^2), data = sparen)
+# model2.sparen <-  lm(Spaargeld ~ poly(Inkomen, degree=2, raw = TRUE), data = sparen)
+summary(model2.sparen)
+```
+
+```{r}
+#| layout-ncol: 2
+#| label: fig-sparen-model2-diagnoses
+#| fig-cap: "Diagnostische grafieken voor het model met een kwadratische term."
+#| fig-subcap: 
+#|   - "Residuals - Fitted values"
+#|   - "Normal Q-Q"
+#|   - "Scale-Location"
+#|   - "Residuals - Leverage"
+
+plot(model2.sparen)
+```
+
+De diagnostische grafieken zijn nu veel beter. Residuen zijn bijna horizontaal en goed verspreid. Verspreiding is bijna uniform en geen enkele punt heeft een teveel aan leverage. De Q-Q grafiek laat echter zien dat enkele punten niet op de Normaal lijn staan, maar dat kan acceptabel zijn.
+
+### Model met uitsluiting waarneming {.unnumbered}
+
+Waarneming 22 wordt uitgesloten.
+
+```{r}
+#| label: sparen21-model
+sparen21 <- sparen[1:21,]
+model.sparen21 <-  lm(Spaargeld ~ Inkomen, data = sparen21)
+summary(model.sparen21)
+```
+
+```{r}
+#| layout-ncol: 2
+#| label: fig-sparen21-model-diagnoses
+#| fig-cap: "Diagnostische grafieken voor het model met uitsluiting waarneming."
+#| fig-subcap: 
+#|   - "Residuals - Fitted values"
+#|   - "Normal Q-Q"
+#|   - "Scale-Location"
+#|   - "Residuals - Leverage"
+
+plot(model.sparen21)
+```
+
+Alle diagnostische grafieken lijken niet goed, ze zijn zelfs slechter dan het oorspronkelijke model.
+
+### Conclusie {.unnumbered}
+
+Tot zo ver komt het model met de kwadratische term het beste voort uit de analyse van de diagnostische grafieken.
+

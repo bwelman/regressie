@@ -1,0 +1,36 @@
+## cars93
+
+```{r}
+#| label: fig-cars
+#| fig-cap: "???"
+
+cars <- MASS::Cars93
+cars.lm <- lm(Price ~ EngineSize, data = cars)
+summary(cars.lm)
+plot(Price ~ EngineSize, data = cars)
+abline(cars.lm)
+```
+
+```{r}
+par(mfrow = c(2,2))
+plot(cars.lm)
+par(mfrow = c(1,1))
+```
+
+The residual plot shows a clear sign of non-constant variance. (The plot looks like a funnel, with variance increasing with fitted value.) One can also see this from the upward slope evidence from the the scale-location plot.
+
+Try running a linear regression with `log(Price)` as your outcome.
+
+```{r}
+cars.lm.log <- lm(log(Price) ~ EngineSize, data = cars)
+
+summary(cars.lm.log)
+
+par(mfrow = c(2,2))
+plot(cars.lm.log)
+par(mfrow = c(1,1))
+```
+
+The variance now looks pretty constant across the range of fitted values, and there don\'t appear to be any clear trends in the plots. All of the diagnostic plots seem pretty good. It looks like the log transformation helped.
+
+

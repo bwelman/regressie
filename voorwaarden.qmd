@@ -1,4 +1,4 @@
-# Voorwaarden voor lineaire regressie {#sec-voorwaarden}
+# Voorwaarden {#sec-voorwaarden}
 
 Voor het toepassen van lineaire regressie moet aan de volgende voorwaarden voldaan zijn.
 

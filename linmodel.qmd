@@ -1,4 +1,4 @@
-# Lineaire Regressie {#linregressie}
+# Lineair model {#linregressie}
 
 ```{r}
 #| results: "asis"

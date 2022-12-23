@@ -1,0 +1,51 @@
+## druk-temperatuur
+
+In dit voorbeeld wordt de relatie tussen druk en temperatuur onderzocht.
+
+```{r}
+#| label: fig-druktemp-data
+#| fig-cap: "Relatie Druk - Temperatuur"
+
+druktemp <- data.frame(temp = seq(from = 10, to = 100, by = 10), 
+					   druk = c(18.5, 24.9, 30.3, 43.7, 80.1, 118.5, 169.9, 228.3, 302.7,385.1))
+# lineair model
+model1 <- lm(druk ~ temp, data = druktemp)
+# Spreidingsdiagram met regressielijn
+plot(druk ~ temp, data = druktemp)
+abline(reg = model1)
+summary(model1) # samenvatting model
+```
+
+Beide $R^2$ waarden zijn goed. Idealiter zouden de residuen in een grafiek er willekeurig uit moeten zien.
+
+```{r}
+#| label: fig-druktemp-model1-residu
+#| fig-cap: "Residuen bij het lineair model druk-temperatuur."
+plot(model1$residuals, pch = 16, col = "red", 
+	 main = "Residuen Druk~Temperatuur", ylab = "Residuen")
+```
+
+Je ziet dat het gemiddelde wel ongeveer nul is, maar de waarden vertonen geen willekeurig karakter, het diagram ziet er als een parabool uit. Dat betekent dat er misschien een verborgen patroon is dat niet door het lineaire model wordt meegenomen. wat je nu kunt doen is de variabele transformeren of een term toevoegen, bijv. $x^2, x^3, ln(x), ln(x+1), \sqrt(x), \frac{1}{x}, exp(x)$.
+
+::: callout-note
+Vanwege het paraboolkarakter van de residuen wordt een kwadratische term toegevoegd.
+:::
+
+Om verwarring te voorkomen wordt de hoofdletter I voor de transformatie gezet.
+
+```{r}
+#| label: druktemp-model2
+model2 <- lm(druk ~ temp + I(temp^2),  data = druktemp)
+summary(model2)
+```
+
+De p-waarden zijn nu veel kleiner geworden, De $R^2$-waarden zijn bijna gelijk aan 1 geworden. Dus het model is behoorlijk verbeterd. Van dit nieuwe model wordt nu ook een grafiek van de residuen gemaakt.
+
+```{r}
+#| label: fig-druktemp-model2-residu
+#| fig-cap: "Residuen bij lineair model Lengte~Leeftijd waaraan een kwadratische term is toegevoegd."
+plot(model2$residuals, pch = 16, col = "red", 
+	 main = "Druk~Temperatuur model met kwadratische term", ylab = "Residuen")
+```
+
+Er is nu geen patroon te zien, de residuen zijn behoorlijk willekeurig. Het model is nu goed.

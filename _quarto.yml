@@ -8,16 +8,16 @@ book:
   description: "Regressie-analyse met R."
   chapters:
     - index.qmd
-    - linregressie.qmd
+    - linmodel.qmd
     - diagnoses.qmd
-    - voorbeelden.qmd
     - catregressie.qmd
     - correlatie.qmd
-    - logitregressie.qmd
-  appendices: 
-    - overfitting.qmd
     - voorwaarden.qmd
+    - overfitting.qmd
+    - logitmodel.qmd
+    - voorbeelden.qmd
     - referenties.qmd
+        
 
 bibliography: regressie.bib
 nocite: |

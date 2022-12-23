@@ -1,0 +1,40 @@
+## kinderlengte
+
+Van 12 kinderen is de leeftijd (jaren) en lengte (cm bepaald). Maak een model waarbij de lengte verklaard wordt uit de leeftijd.
+
+```{r}
+#| label: fig-kind-data
+#| fig-cap: "Relatie tussen lengte en leeftijd van 12 kinderen."
+
+kind <- data.frame(leeftijd = seq(18,29),
+    lengte = c(76.1,77.0,78.1,78.2,78.8,79.7,79.9,81.1,81.2,81.8,82.8,83.5))
+# spreidingsdiagram
+plot(lengte ~ leeftijd, data = kind,
+	 xlab = "Leeftijd (maanden)", ylab = "Lengte (cm)")
+```
+
+Het model wordt $\text{lengte} = b_0 + b_1\times\text{leeftijd}$
+
+```{r}
+#| label: kind-model
+kind.model <- lm(lengte ~ leeftijd, data = kind)
+summary(kind.model)
+```
+
+De regressievergelijking wordt dus $\text{lengte} = 64.9283 + 0.635\times\text{leeftijd}$.
+
+Het model wordt nu uitgebreid door ook het aantal broers en zussen (variabele `broerzus`) in de formule op te nemen. het model wordt dan
+
+$\text{lengte} = b_0 + b_1\times\text{leeftijd} + b_2\times\text{broerzus}$
+
+```{r}
+#| label: kind2-model
+library(dplyr)
+kind2 <- kind %>% mutate(broerzus = c(1, 2, 3, 2, 0, 1, 5, 0, 1, 4, 1, 5))
+kind2.model <- lm(lengte ~ leeftijd + broerzus, data = kind2)
+summary(kind2.model)
+```
+
+De coëfficient voor de nieuwe verklarende variabele `broerzus` is negatief. Voor elke broer/zus meer neemt de lengte met 0.02 cm af.
+
+Voor `leeftijd` is de p-waarde significant, deze is dus een goede voorspeller voor `lengte`. Maar de p-waarde voor `broerzus` (het aantal broers en zussen) is niet significant, deze variabele past dus niet goed in het model.

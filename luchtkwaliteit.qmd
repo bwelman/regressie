@@ -1,0 +1,120 @@
+## luchtkwaliteit
+
+Dit voorbeeld is geïnspireerd door een artikel in Data Science Blog [@doringInterpretingLinearPrediction2018] en gebruikt de in package `datasets` aanwezige gegevensverzameling `airquality`. Deze dataset bevat metingen van de luchtkwaliteit in New York van mei tot september 1973. Er zijn 153 waarnemingen van 6 variabelen:
+
+-   `Ozone` - gemiddelde hoeveelheid ozon in parts per billion (ppb)
+
+-   `Solar.R` - zonnestraling in Langleys (lang)
+
+-   `Wind` - gemiddelde windsnelheid in miles per hour (mph)
+
+-   `Temp` - maximale dagelijkse temperatuur in graden Fahrenheit op La Guardia Airport.
+
+-   `Month` - maand (nummer 1-12)
+
+-   `Day` - dag ( nummer 1-31)
+
+Voor de analyse kunnen maand en dag worden weggelaten. Verder worden de waarnemingen met ontbrekende waarden verwijderd.
+
+```{r}
+#| label: aq-data
+library(dplyr)
+goed <- complete.cases(airquality)
+aqdata <- airquality[goed,] %>%
+	select(Ozone, Solar.R, Wind, Temp)
+str(aqdata)
+```
+
+**Onderzoeksvraag**
+
+Kun je het ozonniveau voorspellen op basis van zonnestraling, windsnelheid en temperatuur?
+
+**Verkenning data**
+
+Om te zien of de aannames van het lineaire model geschikt zijn voor de beschikbare gegevens, worden de correlaties tussen de variabelen bekeken: een scatterplot en de correlatiecoëfficienten.
+
+```{r}
+#| label: fig-aq-correlaties
+#| fig-cap: "Correlaties tussen de variabelen."
+plot(aqdata)
+cor(aqdata)
+```
+
+Conclusies
+
+-   `Ozone` heeft een negatieve correlatie met `Wind`.
+
+-   `Ozone` heeft een positievecorrelatie met `Temp`.
+
+Het zou dus mogelijk moeten zijn om een lineair model te maken dat het ozonniveau voorspelt met de kemerken.
+
+**Splitsing in training en test set**
+
+```{r}
+#| label: aq-datasplitsing
+set.seed(123)
+trainRijnummers <- createDataPartition(y = aqdata$Ozone, p=0.8, list = FALSE)
+trainData <- aqdata[trainRijnummers, ]
+testData <- aqdata[-trainRijnummers, ]
+```
+
+**Lineair model**
+
+```{r}
+#| label: aq-linmodel
+model <- lm(Ozone ~ Solar.R + Wind + Temp, data = trainData)
+model.samenvatting <- summary(model)
+model.samenvatting
+```
+
+De mediaan van de residuen is `r median(model$residuals)`, wat suggereert dat het model over het algemeen wat hogere ozonwaarden voorspelt dan waargenomen. De grote maximumwaarde geeft echter aan dat sommige uitbijtervoorspellingen ook veel te laag zijn
+
+::: callout-note
+Residu = waargenomen - verwacht. Ofwel verwacht = waargenomen - residu. Omdat de mediaanwaarde ongeveer -4 is, is de verwachte waarde = waargenomen waarde + 4.
+:::
+
+**Residuen**
+
+Kijken naar getallen als mediaan en maximum voor de residuen kan een beetje abstract zijn. Wanneer je de verwachte waarden uitzet tegen de waargenomen waarden krijg je een betere indruk van de kwaliteit van het model.model
+
+```{r}
+#| label: fig-aq-residuen
+#| fig-cap: "Verwachte waarden voor trainData op basis van de regressielijn vs de waargenomen waarden, met daarbij de residuen als vertikale lijnstukjes."
+residuen <- model$residuals  # alternatief: residuals(model)
+waarnemingen <- trainData$Ozone
+verwachtingen <- model$fitted.values
+waardenbereik <- range(verwachtingen, waarnemingen)
+plot(verwachtingen ~ waarnemingen,
+	 xlim = waardenbereik, ylim = waardenbereik)
+abline(0, 1, col = "red")
+segments(waarnemingen, verwachtingen, waarnemingen, verwachtingen+residuen)
+```
+
+::: {.callout-important appearance="simple"}
+In de grafiek is te zien dat er ook negatieve ozonwaarden voorspeld worden. Dit kan natuurlijk niet omdat ozonconcentraties niet onder 0 kunnen komen. In een later stadium zal daarom een beter model gemaakt moeten worden waarbij dat niet gebeurt,
+:::
+
+**Coëfficienten**
+
+```{r}
+#| label: aq-model-coefficienten
+model$coefficients  # alternatief: coefficients(model)
+```
+
+-   De intercept van het model heeft een vrij lage waarde. Dit is de waarde die het model voorspelt wanneer de waarden van alle voorspelvariabelen nul zijn.
+
+-   De lage coëfficiënt voor `Solar.R` geeft aan dat zonnestraling geen belangrijke rol speelt bij het voorspellen van ozonniveaus, wat niet als een verrassing komt omdat het in de verkennende analyse geen grote correlatie met het ozonniveau liet zien.
+
+-   De coëfficiënt voor `Temp` geeft aan dat de ozonniveaus hoog zijn als de temperatuur hoog is (er vormt zich dan sneller ozon).
+
+-   De coëfficiënt voor `Wind` geeft aan dat de ozonniveaus laag zullen zijn voor hogere windsnelheden (de ozon zal dan worden weggeblazen).
+
+De overige waarden die bij de coëfficiënten horen, geven informatie over de statistische zekerheid van de schattingen.
+
+```{r}
+model.samenvatting$coefficients
+```
+
+::: callout-tip
+Voor een verbeterd model zie @doringFindingSuitableLinear2018
+:::
