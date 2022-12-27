@@ -1,4 +1,4 @@
-# Logistische regressie
+# Logistisch model
 
 ```{r}
 #| results: "asis"
@@ -87,7 +87,7 @@ S-curves voor positieve en negatieve effecten.
 
 De odds ratio is de verhouding tussen twee odds.
 
-Voorbeeld. In een mand zitten 4 Rode ballen en 1 Groene bal. Je haalt nu 1 bal uit de mand.
+Voorbeeld. In een mand zitten 4 rode ballen en 1 groene bal. Je haalt nu 1 bal uit de mand.
 
 $P_{rood} = 4/5 = 0,8; P_{groen}=1/5=0,2$
 

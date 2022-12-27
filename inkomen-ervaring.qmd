@@ -1,0 +1,50 @@
+## inkomen-ervaring
+
+In dit voorbeeld [@buijsStatistiekOmMee1991, pag. 303] wordt het verband onderzocht tussen het inkomen (x €1000) en het aantal jaren ervaring van een groep managers.
+
+```{r}
+#| label: ink-erv-data
+
+mydata <- data.frame(ervaring = c(5, 10, 8, 15, 12), 
+					 inkomen = c(60, 80, 90, 120, 100))
+mydata
+```
+
+Allereerst wordt een spreidingsdiagram gemaakt.
+
+```{r}
+#| label: fig-ink-erv
+#| fig-cap: "Relatie tussen inkomen en aantal jaren ervaring."
+
+plot(inkomen ~ ervaring, data = mydata,
+	 xlab = "Ervaring (jaren)", ylab = "Inkomen (x €1000)")
+
+```
+
+Opstellen lineair model: $inkomen = b_0 + b1 * ervaring$
+
+```{r}
+#| label: fig-ink-erv-model
+model <- lm(inkomen ~ ervaring, data = mydata)
+summary(model)
+```
+
+De regressievergelijking wordt dus $inkomen = 34.828 + 5.517*ervaring$
+
+De geschatte waarden (berekend volgens de regressievergelijking) en residuen zijn
+
+```{r}
+#| label: fig-ink-erv-fitted
+model$fitted.values
+model$residuals
+```
+
+```{r}
+#| label: fig-ink-erv-residu
+#| fig-cap: "Residuen bij lineair model Inkomen-Ervaring."
+plot(model$residuals, 
+	 main = "Residuen model Inkomen-Ervaring", ylab = "Residuen")
+abline(h = mean(model$residuals))
+```
+
+Je kunt zien dat de residuen willekeurig verdeeld zijn en het gemiddelde nagenoeg 0 is.

@@ -1,0 +1,44 @@
+## aandelenindex
+
+De dataset `economiedata.csv` bevat een gefingeerde verzameling economische gegevens met de variabelen `Jaar`, `Maand`, `Rentepercentage`, `Werkloosheidspercentage` en `Aandelenindex`. Maak een lineair model van `Aandelenindex` op basis van `Rentepercentage` en `Werkloosheidspercentage`.
+
+-   uitkomstvariabele
+    -   `Aandelenindex`
+-   voorspelvariabelen
+    -   `Rentepercentage`
+    -   `Werkloosheidspercentage`
+
+**Data**
+
+```{r}
+#| label: economie-data
+economiedata <- read.csv("data/economiedata.csv")
+head(economiedata)
+```
+
+Allereerst wordt visueel beoordeeld of er een (lineaire) relatie is tussen de afhankelijke variabele en elk van de onafhankelijke variabelen afzonderlijk.
+
+```{r}
+#| label: fig-aandelen-rente
+#| fig-cap: "Relatie tussen aandelenindex en rentepercentage."
+plot(Aandelenindex ~ Rentepercentage, data = economiedata)
+```
+
+Er is een positief lineair verband te zien, als het Rentepercentage omhoog gaat, gaat ook de Aandelenindex omhoog.
+
+```{r}
+#| label: aandelen-werkloosheid
+#| fig-cap: "Relatie tussen aandelenindex en werkloosheidspercentage."
+plot(Aandelenindex ~ Werkloosheidspercentage, data = economiedata)
+```
+
+Er is een negatief lineair verband te zien, als het Werkloosheidspercentage omhoog gaat, gaat de Aandelenindex omlaag.
+
+**Model**
+
+```{r}
+#| label: economie-model
+model <- lm(Aandelenindex ~ Rentepercentage + Werkloosheidspercentage, 
+			data = economiedata)
+summary(model, correlation = TRUE) # met extra een matrix van de correlaties
+```
