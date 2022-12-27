@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="nl" xml:lang="nl"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.280">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Regressie-analyse met R.">
+
+<title>Regressie - 2&nbsp; Diagnostische grafieken</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./catregressie.html" rel="next">
+<link href="./linmodel.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "Geen resultaten",
+    "search-matching-documents-text": "Gevonden documenten",
+    "search-copy-link-title": "Kopieer link om te zoeken",
+    "search-hide-matches-text": "Extra overeenkomsten verbergen",
+    "search-more-match-text": "meer overeenkomst in dit document",
+    "search-more-matches-text": "meer overeenkomsten in dit document",
+    "search-clear-button-title": "Wissen",
+    "search-detached-cancel-button-title": "Annuleren",
+    "search-submit-button-title": "Verzenden"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Diagnostische grafieken</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Regressie</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Inleiding</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linmodel.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Lineair model</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./diagnoses.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Diagnostische grafieken</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./catregressie.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Categoriale Regressie</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./correlatie.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Correlatie</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./voorwaarden.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Voorwaarden</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./overfitting.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Over- en underfitting</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./logitmodel.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Logistisch model</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./voorbeelden.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Voorbeelden</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./referenties.html" class="sidebar-item-text sidebar-link">Referenties</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Inhoudsopgave</h2>
+   
+  <ul>
+  <li><a href="#ideaal-model" id="toc-ideaal-model" class="nav-link active" data-scroll-target="#ideaal-model"><span class="toc-section-number">2.1</span>  Ideaal model</a>
+  <ul class="collapse">
+  <li><a href="#residual-vs.-fitted" id="toc-residual-vs.-fitted" class="nav-link" data-scroll-target="#residual-vs.-fitted"><span class="toc-section-number">2.1.1</span>  Residual vs.&nbsp;Fitted</a></li>
+  <li><a href="#normal-q-q" id="toc-normal-q-q" class="nav-link" data-scroll-target="#normal-q-q"><span class="toc-section-number">2.1.2</span>  Normal Q-Q</a></li>
+  <li><a href="#scale-location" id="toc-scale-location" class="nav-link" data-scroll-target="#scale-location"><span class="toc-section-number">2.1.3</span>  Scale-Location</a></li>
+  <li><a href="#cooks-distance" id="toc-cooks-distance" class="nav-link" data-scroll-target="#cooks-distance"><span class="toc-section-number">2.1.4</span>  Cook’s Distance</a></li>
+  <li><a href="#residuals-vs-leverage" id="toc-residuals-vs-leverage" class="nav-link" data-scroll-target="#residuals-vs-leverage"><span class="toc-section-number">2.1.5</span>  Residuals vs Leverage</a></li>
+  <li><a href="#cooks-dist-vs-leverage" id="toc-cooks-dist-vs-leverage" class="nav-link" data-scroll-target="#cooks-dist-vs-leverage"><span class="toc-section-number">2.1.6</span>  Cook’s dist vs Leverage</a></li>
+  <li><a href="#samenvatting" id="toc-samenvatting" class="nav-link" data-scroll-target="#samenvatting"><span class="toc-section-number">2.1.7</span>  Samenvatting</a></li>
+  </ul></li>
+  <li><a href="#niet-ideale-modellen" id="toc-niet-ideale-modellen" class="nav-link" data-scroll-target="#niet-ideale-modellen"><span class="toc-section-number">2.2</span>  Niet-ideale modellen</a>
+  <ul class="collapse">
+  <li><a href="#gebogen-trend" id="toc-gebogen-trend" class="nav-link" data-scroll-target="#gebogen-trend"><span class="toc-section-number">2.2.1</span>  Gebogen trend</a></li>
+  <li><a href="#niet-constante-variantie" id="toc-niet-constante-variantie" class="nav-link" data-scroll-target="#niet-constante-variantie"><span class="toc-section-number">2.2.2</span>  Niet constante variantie</a></li>
+  <li><a href="#uitschieters" id="toc-uitschieters" class="nav-link" data-scroll-target="#uitschieters"><span class="toc-section-number">2.2.3</span>  Uitschieters</a></li>
+  </ul></li>
+  <li><a href="#inkomen-spaargeld" id="toc-inkomen-spaargeld" class="nav-link" data-scroll-target="#inkomen-spaargeld"><span class="toc-section-number">2.3</span>  Inkomen-Spaargeld</a></li>
+  <li><a href="#niet-grafische-methoden" id="toc-niet-grafische-methoden" class="nav-link" data-scroll-target="#niet-grafische-methoden"><span class="toc-section-number">2.4</span>  Niet grafische methoden</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-diagnoses" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Diagnostische grafieken</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Bron: <a href="http://data.library.virginia.edu/diagnostic-plots/">Understanding Diagnostic Plots for Linear Regression Analysis</a></p>
+<p>R heeft een zestal ingebouwde diagnostische grafieken voor lineaire regressie.</p>
+<ol type="1">
+<li>Residuals vs Fitted</li>
+<li>Normal Q-Q</li>
+<li>Scale-Location</li>
+<li>Cook’s distance</li>
+<li>Residuals vs Leverage</li>
+<li>Cook’s dist vs Leverage</li>
+</ol>
+<p>R kan deze grafieken produceren wanneer je de functie <code>plot()</code> uitvoert op een object van een lineair <code>lm</code> model. In feite wordt dan de functie <code>plot.lm()</code> uitgevoerd. Het gewenste grafieknummer kun je specificeren met argument <code>which=</code>. Wanneer het argument <code>which</code> wordt weggelaten worden standaard de grafieken 1, 2, 3 en 5 gemaakt. Hiervan zijn de eerste twee het belangrijkst, maar de laatste twee kunnen goed helpen bij het identificeren van uitschieters en het niet-lineair zijn.</p>
+<section id="ideaal-model" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="ideaal-model"><span class="header-section-number">2.1</span> Ideaal model</h2>
+<p>Bron: <a href="https://www.andrew.cmu.edu/user/achoulde/94842/homework/regression_diagnostics.html">Regression diagnostic plots, Chouldechova</a></p>
+<p>Voor het maken van vergelijkingen met een ideaal model wordt een gegevensverzameling gemaakt welke perfect voldoet aan alle standaardeisen voor lineaire regressie. De data wordt gegenereerd voor de lineaire vergelijking</p>
+<p><span class="math display">\[y_i = 3 + 0.1 x + \epsilon_i,\]</span></p>
+<p>met <span class="math inline">\(i = 1, 2, \ldots, 1000\)</span>, met <span class="math inline">\(\epsilon_i \sim N(0, 3)\)</span>.</p>
+<p>De x-waarden worden gegenereerd uit een uniforme verdeling [0, 100]</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">500</span>      <span class="co"># aantal waarnemingen</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>((<span class="dv">12345</span>))</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(n, <span class="at">min =</span> <span class="dv">0</span>, <span class="at">max =</span> <span class="dv">100</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>y.ideaal <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">+</span> <span class="fl">0.1</span> <span class="sc">*</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> <span class="dv">3</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ideale lineaire model</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>lm.ideaal <span class="ot">&lt;-</span> <span class="fu">lm</span>(y.ideaal <span class="sc">~</span> x)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y.ideaal, <span class="at">main =</span> <span class="st">"ideaal lineair model"</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(lm.ideaal, <span class="at">col =</span> <span class="st">"blue"</span>) <span class="co"># regressielijn toevoegen</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-ideaal" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-ideaal-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.1: Spreidingsdiagram voor een ideaal lineair model met regressielijn.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+
+</div>
+<p>Het spreidingsdiagram toont een perfecte lineaire regressie: de punten lijken willekeurig verspreid over de lijn, zonder waarneembare niet-lineaire trends of niet-constante variantie.</p>
+<section id="residual-vs.-fitted" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="residual-vs.-fitted"><span class="header-section-number">2.1.1</span> Residual vs.&nbsp;Fitted</h3>
+<p>In deze grafiek worden de residuen uitgezet tegen de voorspelde waarden. Idealiter mag deze grafiek geen patroon vertonen. Wanneer je wel een patroon (curve, U-vorm) ziet dan suggereert dit niet-lineariteit in de dataset. Als je gelijk verdeelde residuen rond een horizontale lijn vindt zonder duidelijke patronen, is dat een goede indicatie dat je lineaire relaties hebt. Als je bovendien een trechtervormig patroon ziet, dan suggereert dit heteroskedasticiteit, d.w.z. dat de fouttermen een niet-constante variantie hebben.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lm.ideaal, <span class="at">which =</span> <span class="dv">1</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-ideaal-residu" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-ideaal-residu-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.2: Residuals-fitted voor het ideale model.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>De rode lijn kun je zien als een soort regressielijn voor de residuen en deze toont de gemiddelde waarde van de residuen voor elke berekende waarde (fitted value). Deze rode lijn is vlak en wijst er op dat er geen waarneembare niet-lineaire trend in de residuen is. Verder lijken de residuen even variabel te zijn over het gehele bereik van passende waarden. Er is geen indicatie van niet-constante variantie.</p>
+</section>
+<section id="normal-q-q" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="normal-q-q"><span class="header-section-number">2.1.2</span> Normal Q-Q</h3>
+<p>Met deze grafiek kun je zien of residuen ruwweg normaal verdeeld zijn. Het maakt gebruik van gestandaardiseerde waarden van residuen. Idealiter zou deze grafiek een rechte lijn moeten vertonen. Vind je een gekromde, vervormde lijn, dan hebben je residuen een niet-normale verdeling (problematische situatie).</p>
+<p>Wanneer de residuen de neiging hebben om groter in omvang te zijn dan wat je zou verwachten van de normale verdeling, dan kunnen de p-waarden en betrouwbaarheidsintervallen te optimistisch zijn.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lm.ideaal, <span class="at">which =</span> <span class="dv">2</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-ideaal-qq" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-ideaal-qq-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.3: Normal QQ grafiek voor het ideale model.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>De residuen vormen hier een goede match met de diagonale lijn. De residuen lijken dus normaal verdeeld te zijn.</p>
+</section>
+<section id="scale-location" class="level3" data-number="2.1.3">
+<h3 data-number="2.1.3" class="anchored" data-anchor-id="scale-location"><span class="header-section-number">2.1.3</span> Scale-Location</h3>
+<p>Met deze grafiek (ook wel <em>Spread-Location</em> genoemd) kun je zien of residuen gelijkelijk zijn verdeeld over de reeksen van voorspellers. Zo kun je de aanname van gelijke variantie (homoscedasticiteit) controleren. Het is goed als je een horizontale lijn ziet met gelijke (willekeurige) spreidingspunten.</p>
+<p>Deze grafiek is een meer gevoelige benadering voor het zoeken naar afwijkingen van de aanname van constante variantie. Als je significante trends in de rode lijn op deze grafiek ziet, dan is dat een aanwijzing dat de residuen (en dus fouten) een niet-constante variantie hebben. Dat wil zeggen, de aanname dat alle <span class="math inline">\(\epsilon_i\)</span> dezelfde variantie <span class="math inline">\(\sigma^2\)</span> hebben, is niet waar.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lm.ideaal, <span class="at">which =</span> <span class="dv">3</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-ideaal-scale" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-ideaal-scale-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.4: Scale-Location grafiek voor het ideale model.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Een horizontale rode lijn is ideaal en geeft aan dat de residuen een uniforme variatie hebben binnen het bereik van de verklarende variabele. Naarmate de residuen zich verder van elkaar verspreiden, gaat de rode lijn omhoog.</p>
+<p>De lijn is hier behoorlijk plat, wat betekent dit de fouten een constante variantie hebben, zoals gewenst.</p>
+</section>
+<section id="cooks-distance" class="level3" data-number="2.1.4">
+<h3 data-number="2.1.4" class="anchored" data-anchor-id="cooks-distance"><span class="header-section-number">2.1.4</span> Cook’s Distance</h3>
+<p>Cook’s Distance, vaak aangeduid met <span class="math inline">\(D_i\)</span>, wordt gebruikt om invloedrijke gegevenspunten te identificeren die een negatief effect kunnen hebben op uw regressiemodel. Het feit dat een gegevenspunt invloedrijk is, betekent niet dat het noodzakelijkerwijs moet worden verwijderd. Controleer eerst of het gegevenspunt gewoon onjuist is vastgelegd of dat er iets vreemds aan het gegevenspunt is dat op een interessante bevinding kan wijzen.</p>
+<p>In wezen doet Cook’s Distance één ding: het meet hoeveel alle berekende waarden in het model veranderen wanneer gegevenspunt <span class="math inline">\(i\)</span> wordt verwijderd.</p>
+<p>Een gegevenspunt met een grote waarde voor Cook’s Distance geeft aan dat het de berekende waarden sterk beïnvloedt. Een algemene vuistregel is dat elk punt met een Cook’s Distance groter dan 4/n (waarbij n het totale aantal gegevenspunten is) als een uitbijter wordt beschouwd.</p>
+<p>Met deze grafiek worden de Cook’s afstanden voor elke waarneming bepaald en in een grafiek uitgezet.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lm.ideaal, <span class="at">which =</span> <span class="dv">4</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-ideaal-cook" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-ideaal-cook-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.5: Cook’s afstanden voor elke waarneming van het ideale model.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="residuals-vs-leverage" class="level3" data-number="2.1.5">
+<h3 data-number="2.1.5" class="anchored" data-anchor-id="residuals-vs-leverage"><span class="header-section-number">2.1.5</span> Residuals vs Leverage</h3>
+<p>Leverage is een maatstaf voor de mate waarin een waarneming het passen (fit) van het model beinvloedt. Het is een ééncijferige samenvatting van hoe verschillend de fit van het model zou zijn als de betreffende waarneming niet mee zou tellen.</p>
+<p>Punten met een hoog residu (=slecht beschreven door het model) en een hoge leverage (= grote invloed op de modelfit) zijn uitschieters. Ze trekken het model weg van de rest van de gegevens en lijken niet echt te passen bij de rest van de gegevens.</p>
+<p>Deze grafiek helpt je om invloedrijke waarnemingen te vinden als ze er zijn. Niet alle uitschieters zijn invloedrijk in de lineaire regressie-analyse. Zelfs als de gegevens extreme waarden hebben, zijn ze mogelijk niet van invloed op het bepalen van een regressielijn. Dat betekent dat de resultaten niet veel anders zouden zijn als ze in- of uitgesloten zouden worden bij de analyse. Ze volgen in de meeste gevallen de trend en ze doen er niet echt toe; ze zijn niet invloedrijk. Aan de andere kant kunnen sommige gevallen zeer invloedrijk zijn, zelfs als ze binnen een redelijk bereik van de waarden lijken te liggen. Dit kunnen extreme gevallen zijn voor een regressielijn en kunnen de resultaten wijzigen wanneer ze zouden worden uitgesloten bij de analyse. Een andere manier om het te zeggen is dat ze in de meeste gevallen niet aansluiten bij de trend.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lm.ideaal, <span class="at">which =</span> <span class="dv">5</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-ideaal-leverage" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-ideaal-leverage-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.6: Residuals-Leverage grafiek voor het ideale model.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Deze grafiek is een goed voorbeeld dat er geen bewijs voor uitschieters is. De gestippelde Cook’s afstandslijnen zijn zelfs niet aanwezig in de grafiek. Geen van de punten komt in de buurt van zowel een groot residu als een grote leverage.</p>
+</section>
+<section id="cooks-dist-vs-leverage" class="level3" data-number="2.1.6">
+<h3 data-number="2.1.6" class="anchored" data-anchor-id="cooks-dist-vs-leverage"><span class="header-section-number">2.1.6</span> Cook’s dist vs Leverage</h3>
+<p>In deze grafiek zijn contouren van gestandaardiseerde residuen die even groot zijn, lijnen door de oorsprong. De contourlijnen zijn gelabeld met de magnitudes.</p>
+<p>De afstand van Cook is groot als de waarneming een groot residu heeft of als deze een grote invloed op het model uitoefent.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lm.ideaal, <span class="at">which =</span> <span class="dv">6</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-ideaal-cook-leverage" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-ideaal-cook-leverage-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.7: Cook’s distance-Leverage grafiek voor het ideale model.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="samenvatting" class="level3" data-number="2.1.7">
+<h3 data-number="2.1.7" class="anchored" data-anchor-id="samenvatting"><span class="header-section-number">2.1.7</span> Samenvatting</h3>
+<p>De diagnostische grafieken geven informatie over het model en de gegevens. Het kan zijn dat het gebruikte model niet de beste manier is om de gegevens te begrijpen en dat er waardevolle informatie in de data is achtergebleven. In dat geval wil je misschien terug naar je theorie en hypothesis. Is er werkelijk een lineaire relatie tussen de onafhankelijke variabele(n) en de afhankelijke variabele? Misschien moet er bijvoorbeeld een kwadratische term worden opgenomen. Of geeft een logaritmische transformatie het verschijnsel dat je wilt modelleren beter weer. Of er is misschien een belangrijke variabele die niet in het model is opgenomen? Of misschien waren de gegevens systematisch vertekend (systematische ruis) bij het verzamelen hiervan, waardoor je daar dan een nieuwe methode voor moet ontwerpen.</p>
+<p>Voor verdere verdieping zie het artikel <a href="https://www.theopeneducator.com/doe/Regression/outlier-leverage-influential-points">Unusual Observations - Outlier, Leverage, and Influential Points</a></p>
+</section>
+</section>
+<section id="niet-ideale-modellen" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="niet-ideale-modellen"><span class="header-section-number">2.2</span> Niet-ideale modellen</h2>
+<section id="gebogen-trend" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="gebogen-trend"><span class="header-section-number">2.2.1</span> Gebogen trend</h3>
+<p>Hier is een voorbeeld waarbij niet-lineaire trends in de gegevens aanwezig zijn. Dit voorbeeld is gemaakt om seizoensgegevens na te bootsen.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>y.gebogen <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="sc">*</span> <span class="fu">sin</span>(<span class="fl">0.6</span> <span class="sc">*</span> x) <span class="sc">+</span> <span class="fl">0.1</span> <span class="sc">*</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> <span class="dv">2</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Scatterplot van de data</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(x, y.gebogen)) <span class="sc">+</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stat_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>) <span class="sc">+</span> </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stat_smooth</span>(<span class="at">method =</span> <span class="st">"loess"</span>, <span class="at">span =</span> <span class="fl">0.1</span>, <span class="at">colour =</span> <span class="fu">I</span>(<span class="st">"red"</span>))</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-gebogen" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-gebogen-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.8: Gegevens met een seizoentrend</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>De blauwe lijn geeft het lineaire model weer. De rode curve is een niet-lineaire aanpassing die de gemiddelde waarde van y beter modelleert bij elke waarde van x. Merk op dat het lineaire model er niet in slaagt de duidelijke niet-lineaire trend vast te leggen die aanwezig is in de gegevens. Dit veroorzaakt enorme problemen voor onze gevolgtrekking. Kijk naar de grijze betrouwbaarheidsband die de regressielijn omringt. Als aan de standaardaannames voor lineaire regressie wordt voldaan, zou deze band met hoge waarschijnlijkheid de gemiddelde waarde van y bevatten bij elke waarde van x. d.w.z. de grijze banden rond de blauwe curve zouden grotendeels de rode curve moeten bevatten. Dit gebeurt uiteraard niet. De rode curve ligt bijna altijd ver buiten de grijze banden rond de blauwe regressielijn.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>lm.gebogen <span class="ot">&lt;-</span> <span class="fu">lm</span>(y.gebogen <span class="sc">~</span> x)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lm.gebogen, <span class="at">which =</span> <span class="dv">1</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-gebogen-residu" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-gebogen-residu-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.9: Residuals-fitted voor het gekromde model.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Visueel is een duidelijke trend in de residuen te zien. Ze hebben een periodieke trend. Helaas doet de scatterplot smoother die wordt gebruikt om de rode lijn te construeren hier geen goed werk. Dit is een geval waarin de keuze van buurtgrootte (hoeveel punten er nodig zijn om het lokale gemiddelde te berekenen) te groot wordt geacht om de trend die we visueel waarnemen vast te leggen. Vertrouw die rode curve niet altijd.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lm.gebogen, <span class="at">which =</span> <span class="dv">2</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-gebogen-normal" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-gebogen-normal-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.10: Normal Q-Q voor het gekromde model.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In de QQ-plot is te zien dat de residuen afwijken van de diagonale lijn in zowel de bovenste als de onderste staart. Deze grafiek gaf aan dat de staarten ‘lichter’ zijn (kleinere waarden hebben) dan wat we zouden verwachten onder de standaardmodelleringsaannames. Dit wordt aangegeven door de punten die een “plattere” lijn vormen dan de diagonaal.</p>
+</section>
+<section id="niet-constante-variantie" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="niet-constante-variantie"><span class="header-section-number">2.2.2</span> Niet constante variantie</h3>
+<p>Voor dit voorbeeld worden gegevens gegenereerd waarbij de foutvariantie toeneemt met <span class="math inline">\(x\)</span>. Het model wordt</p>
+<p><span class="math display">\[
+y_i = 3 + 0.2x_i + \epsilon_i
+\]</span> met <span class="math display">\[\epsilon_i \sim N(0, 9(1 + x/25)^2)\]</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>y.toenemend <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">+</span> <span class="fl">0.2</span> <span class="sc">*</span> x <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> x <span class="sc">/</span> <span class="dv">25</span>) <span class="sc">*</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> <span class="dv">3</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y.toenemend, <span class="at">ylab =</span> <span class="st">"y"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-toenemend" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-toenemend-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.11: Gegevens met een toenemende variantie.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>lm.toenemend <span class="ot">&lt;-</span> <span class="fu">lm</span>(y.toenemend <span class="sc">~</span> x)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lm.toenemend, <span class="at">which =</span> <span class="dv">1</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-toenemend-residu" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-toenemend-residu-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.12: Residuals-fitted voor het model met toenemende variantie.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Als je naar deze plot kijkt, zie je dat er een duidelijk “trechter”-fenomeen is. De verdeling van de residuen is vrij goed geconcentreerd rond 0 voor kleine aangepaste waarden, maar ze worden meer en meer verspreid naarmate de aangepaste waarden toenemen. Dit is een voorbeeld van “toenemende variantie”.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lm.toenemend, <span class="at">which =</span> <span class="dv">2</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-toenemend-normal" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-toenemend-normal-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.13: Normal Q-Q voor het model met toenemende variantie.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In deze Q-Q plot wijken de residuen af van de diagonale lijn in zowel de bovenste als de onderste staart. Hier zijn de staarten ‘zwaarder’ (hebben grotere waarden) dan je zou verwachten op basis van de standaardmodelleringsaannames. Dit wordt aangegeven door de punten die een “steilere” lijn vormen dan de diagonaal.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lm.toenemend, <span class="at">which =</span> <span class="dv">3</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-toenemend-scale" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-toenemend-scale-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.14: Scale-Location voor het model met toenemende variantie.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Let op de duidelijke opwaartse helling in de rode trendlijn. Dit wijst op een niet-constante variantie.</p>
+<p>De standaardaanname van lineaire regressie is dat de variantie constant is over het gehele bereik. Als deze aanname niet geldig is, zoals in dit voorbeeld, mag je de betrouwbaarheidsintervallen, voorspellingsbanden of de p-waarden in deze regressie niet geloven.</p>
+</section>
+<section id="uitschieters" class="level3" data-number="2.2.3">
+<h3 data-number="2.2.3" class="anchored" data-anchor-id="uitschieters"><span class="header-section-number">2.2.3</span> Uitschieters</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">12345</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>y.aangepast <span class="ot">&lt;-</span> y.ideaal[<span class="dv">1</span><span class="sc">:</span>n]</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>x.aangepast <span class="ot">&lt;-</span> x[<span class="dv">1</span><span class="sc">:</span>n]</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Selecteer 10 willekeurige punten om aan te passen</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>to.aangepast <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(x.aangepast), <span class="dv">10</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>y.aangepast[to.aangepast] <span class="ot">&lt;-</span> <span class="sc">-</span> <span class="fl">1.5</span> <span class="sc">*</span> y.aangepast[to.aangepast] <span class="sc">+</span> <span class="dv">3</span> <span class="sc">*</span> <span class="fu">rt</span>(<span class="dv">10</span>, <span class="at">df =</span> <span class="dv">3</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>x.aangepast[to.aangepast] <span class="ot">&lt;-</span> x.aangepast[to.aangepast] <span class="sc">*</span> <span class="fl">2.5</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit regression and display diagnostic plot</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>lm.aangepast <span class="ot">&lt;-</span> <span class="fu">lm</span>(y.aangepast <span class="sc">~</span> x.aangepast)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lm.aangepast, <span class="at">which =</span> <span class="dv">5</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="diagnoses_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="576"></p>
+</div>
+</div>
+<p>In deze grafiek zis te zien dat er verschillende punten zijn met een hoge restwaarde en een hoge hefboomwerking (leverage). De punten die dicht bij of buiten de gestippelde curven liggen, zijn de moeite waard om verder te onderzoeken.</p>
+</section>
+</section>
+<section id="inkomen-spaargeld" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="inkomen-spaargeld"><span class="header-section-number">2.3</span> Inkomen-Spaargeld</h2>
+<div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>sparen <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/inkomen-spaargeld.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>model.sparen <span class="ot">=</span> <span class="fu">lm</span>(Spaargeld <span class="sc">~</span> Inkomen , <span class="at">data =</span> sparen)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Diagnostische grafiekens</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model.sparen)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="fig-sparendiagnoses" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-sparendiagnoses-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-sparendiagnoses-1.png" class="img-fluid figure-img" data-ref-parent="fig-sparendiagnoses" width="576"></p>
+<p></p><figcaption class="figure-caption">(a) Residuals - Fitted values</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-sparendiagnoses-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-sparendiagnoses-2.png" class="img-fluid figure-img" data-ref-parent="fig-sparendiagnoses" width="576"></p>
+<p></p><figcaption class="figure-caption">(b) Normal Q-Q</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-sparendiagnoses-3" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-sparendiagnoses-3.png" class="img-fluid figure-img" data-ref-parent="fig-sparendiagnoses" width="576"></p>
+<p></p><figcaption class="figure-caption">(c) Scale-Location</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-sparendiagnoses-4" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-sparendiagnoses-4.png" class="img-fluid figure-img" data-ref-parent="fig-sparendiagnoses" width="576"></p>
+<p></p><figcaption class="figure-caption">(d) Residuals - Leverage</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.15: De vier diagnostische grafieken die standaard getoond worden.</figcaption><p></p>
+</figure>
+</div>
+</div>
+<p>Je ziet vaak nummers bij sommige punten in deze grafieken. Dat zijn extreme waarden op basis van elk criterium en geidentificeerd door de rijnummers in de gegevensverzameling. Wanneer sommige nummers in alle vier de grafieken verschijnen is er reden om de waarneming individueel te bekijken. Is er iets speciaals met dit punt aan de hand? Of is er een fout gemaakt bij het invoeren van de gegevens?</p>
+<p><strong>Residuals vs Fitted</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model.sparen, <span class="at">which =</span> <span class="dv">1</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-sparendiag1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-sparendiag1-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.16: Residuals-Fitted.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>De residuen vertonen een gebogen patroon (paraboolachtig). Dit zou kunnen betekenen dat je een beter model kunt krijgen door een kwadratische term aan het model toe te voegen.</p>
+<p><strong>Normal Q-Q</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model.sparen, <span class="at">which =</span> <span class="dv">2</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-sparendiag2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-sparendiag2-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.17: Diagnostische grafiek Normal Q-Q.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>De punten volgen de stippellijn goed, behalve waarneming 22. De residuen van het model voldoen hiermee aan de test voor een normale verdeling.</p>
+<p><strong>Scale-Location</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model.sparen, <span class="at">which =</span> <span class="dv">3</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-sparendiag3" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-sparendiag3-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.18: Diagnostische grafiek Scale-Location.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Tot ongeveer 100000 is sprake van homoscedasticiteit (dus uniforme variatie), daarna wordt het heteroscedasticiteit.</p>
+<p><strong>Cook’s distance</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model.sparen, <span class="at">which =</span> <span class="dv">4</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-sparendiag4" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-sparendiag4-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.19: Diagnostische grafiek Cook’s distance.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Duidelijk is te zien dat waarneming 22 afwijkt van de rest en hierdoor mogelijk het model slecht beinvloedt. Afhankelijk van de oorzaak kun je het punt verwijderen of de waarde corrigeren. Maar het is natuurlijk ook mogelijk dat het een geldig punt is.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Opmerking
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Alternatief</p>
+<p><code>plot(cooks.distance(model.sparen), pch = 16, col = "blue")</code></p>
+</div>
+</div>
+<p><strong>Residuals vs Leverage</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model.sparen, <span class="at">which =</span> <span class="dv">5</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-sparendiag5" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-sparendiag5-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.20: Diagnostische grafiek Residuals-Leverage.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>De gestippelde lijnen zijn de Cooks afstanden. De interessegebieden zijn de gebieden buiten de stippellijn in de rechterbovenhoek of rechteronderhoek. De punten hierin kunnen een grote invloed hebben op het regressiemodel. Dergelijke punten hebben een hoge leverage of de potentie voor beinvloeding van het model is groter wanneer je die punten uitsluit.</p>
+<p>In dit voorbeeld heeft waarneming 22 grote invloed op het regressiemodel.</p>
+<p><strong>Cook’s dist vs Leverage</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model.sparen, <span class="at">which =</span> <span class="dv">6</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-sparendiag6" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="diagnoses_files/figure-html/fig-sparendiag6-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;2.21: Diagnostische grafiek Cook’s dist vs Leverage.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="niet-grafische-methoden" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="niet-grafische-methoden"><span class="header-section-number">2.4</span> Niet grafische methoden</h2>
+<p><strong>Durbin Watson Statistiek (DW)</strong></p>
+<p>Deze test wordt gebruikt om autocorrelatie te controleren. De waarde ligt tussen 0 en 4. Een DW=2 waarde vertoont geen autocorrelatie. Een waarde tussen 0 &lt; DW &lt; 2 impliceert echter positieve autocorrelatie, terwijl 2 &lt; DW &lt; 4 negatieve autocorrelatie impliceert.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">durbinWatsonTest</span>(lm.ideaal)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> lag Autocorrelation D-W Statistic p-value
+   1        -0.00932          2.02   0.902
+ Alternative hypothesis: rho != 0</code></pre>
+</div>
+</div>
+<p><strong>Variantie-inflatiefactor (VIF)</strong></p>
+<p>Deze statistiek wordt gebruikt om multicollineariteit te controleren. VIF &lt;=4 impliceert geen multicollineariteit, maar VIF &gt;=10 suggereert hoge multicollineariteit. Als alternatief kunt u ook naar de tolerantiewaarde (1/VIF) kijken om de correlatie in IV’s te bepalen. Daarnaast kun je ook een correlatiematrix maken om collineaire variabelen te bepalen.</p>
+<p><strong>Breusch-Pagan / Cook Weisberg-Test</strong></p>
+<p>Deze test wordt gebruikt om de aanwezigheid van heteroskedasticiteit te bepalen. Als je p &lt; 0,05 vindt, verwerp je de nulhypothese en concludeer je dat heteroskedasticiteit aanwezig is.</p>
+
+
+<div id="refs" class="references csl-bib-body" role="doc-bibliography" style="display: none">
+<div id="ref-FisherExactTest2022" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>1</strong>. </div><div class="csl-right-inline"><span>‘<a href="https://en.wikipedia.org/w/index.php?title=Fisher%27s_exact_test&amp;oldid=1117572309">Fisher’s Exact Test</a>’</span>, <em>Wikipedia</em>, (2022).</div>
+</div>
+<div id="ref-UnusualObservationsOutlier" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>2</strong>. </div><div class="csl-right-inline"><span>‘<span>Unusual Observations - Outlier, Leverage, and Influential Points</span>’</span>, <a href="https://www.theopeneducator.com/doe/Regression/outlier-leverage-influential-points">https://www.theopeneducator.com/doe/Regression/outlier-leverage-influential-points</a>.</div>
+</div>
+<div id="ref-buijsStatistiekOmMee1991" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>3</strong>. </div><div class="csl-right-inline"><strong>Buijs, A.</strong>, <span>‘<span>Statistiek om mee te werken</span>’</span>, Third dr., <span>Stenfert Kroese</span>, (1991).</div>
+</div>
+<div id="ref-chouldechovaRegressionDiagnosticPlots" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>4</strong>. </div><div class="csl-right-inline"><strong>Chouldechova, A.</strong>, <span>‘Regression Diagnostic Plots’</span>, <a href="https://www.andrew.cmu.edu/user/achoulde/94842/homework/regression_diagnostics.html">https://www.andrew.cmu.edu/user/achoulde/94842/homework/regression_diagnostics.html</a>.</div>
+</div>
+<div id="ref-datacampLinearRegressionTutorial" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>5</strong>. </div><div class="csl-right-inline"><strong>Datacamp</strong>, <span>‘R <span>Linear Regression Tutorial</span>: Lm <span>Function</span> in <span>R</span> with <span>Code Examples</span>’</span>, <a href="https://www.datacamp.com/tutorial/linear-regression-R">https://www.datacamp.com/tutorial/linear-regression-R</a>.</div>
+</div>
+<div id="ref-doringFindingSuitableLinear2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>6</strong>. </div><div class="csl-right-inline"><strong>Döring, M.</strong>, <span>‘Finding a <span>Suitable Linear Model</span> for <span>Ozone Prediction</span>’</span>, <em>Data Science Blog</em>, 2018. <a href="https://www.datascienceblog.net/post/machine-learning/improving_ozone_prediction/">https://www.datascienceblog.net/post/machine-learning/improving_ozone_prediction/</a>.</div>
+</div>
+<div id="ref-doringInterpretingLinearPrediction2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>7</strong>. </div><div class="csl-right-inline"><strong>Döring, M.</strong>, <span>‘Interpreting <span>Linear Prediction Models</span>’</span>, <em>Data Science Blog</em>, 2018. <a href="https://www.datascienceblog.net/post/machine-learning/linear_models/">https://www.datascienceblog.net/post/machine-learning/linear_models/</a>.</div>
+</div>
+<div id="ref-hackerearthBeginnersGuideRegression" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>8</strong>. </div><div class="csl-right-inline"><strong>Hackerearth</strong>, <span>‘Beginners <span>Guide</span> to <span>Regression Analysis</span> and <span>Plot Interpretations</span>’</span>, <a href="https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/beginners-guide-regression-analysis-plot-interpretations/tutorial/">https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/beginners-guide-regression-analysis-plot-interpretations/tutorial/</a>.</div>
+</div>
+<div id="ref-hackerearthPracticalGuideLogistic" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>9</strong>. </div><div class="csl-right-inline"><strong>Hackerearth</strong>, <span>‘Practical <span>Guide</span> to <span>Logistic Regression Analysis</span> in <span>R</span>’</span>, <a href="https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/logistic-regression-analysis-r/tutorial/">https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/logistic-regression-analysis-r/tutorial/</a>.</div>
+</div>
+<div id="ref-kassambaraLogisticRegressionEssentials2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>10</strong>. </div><div class="csl-right-inline"><strong>Kassambara, A.</strong>, <span>‘Logistic <span>Regression Essentials</span> in <span>R</span>’</span>, 2018. <a href="http://www.sthda.com/english/articles/36-classification-methods-essentials/151-logistic-regression-essentials-in-r/">http://www.sthda.com/english/articles/36-classification-methods-essentials/151-logistic-regression-essentials-in-r/</a>.</div>
+</div>
+<div id="ref-kassambaraMachineLearningEssentials2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>11</strong>. </div><div class="csl-right-inline"><strong>Kassambara, A.</strong>, <span>‘Machine <span>Learning Essentials</span>: <span>Practical Guide</span> in <span>R</span>’</span>, 1st edition dr., (2018).</div>
+</div>
+<div id="ref-universityofvirginiaUnderstandingDiagnosticPlots" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>12</strong>. </div><div class="csl-right-inline"><strong>University of Virginia</strong>, <span>‘Understanding <span>Diagnostic Plots</span> for <span>Linear Regression Analysis</span> | <span>University</span> of <span>Virginia Library Research Data Services</span> + <span>Sciences</span>’</span>, <a href="https://data.library.virginia.edu/diagnostic-plots/">https://data.library.virginia.edu/diagnostic-plots/</a>.</div>
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Gekopieerd!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Gekopieerd!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          // default icon
+          link.classList.add("external");
+      }
+    }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./linmodel.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Lineair model</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./catregressie.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Categoriale Regressie</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

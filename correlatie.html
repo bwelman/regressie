@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="nl" xml:lang="nl"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.280">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Regressie-analyse met R.">
+
+<title>Regressie - 4&nbsp; Correlatie</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./voorwaarden.html" rel="next">
+<link href="./catregressie.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "Geen resultaten",
+    "search-matching-documents-text": "Gevonden documenten",
+    "search-copy-link-title": "Kopieer link om te zoeken",
+    "search-hide-matches-text": "Extra overeenkomsten verbergen",
+    "search-more-match-text": "meer overeenkomst in dit document",
+    "search-more-matches-text": "meer overeenkomsten in dit document",
+    "search-clear-button-title": "Wissen",
+    "search-detached-cancel-button-title": "Annuleren",
+    "search-submit-button-title": "Verzenden"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Correlatie</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Regressie</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Inleiding</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linmodel.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Lineair model</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./diagnoses.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Diagnostische grafieken</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./catregressie.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Categoriale Regressie</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./correlatie.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Correlatie</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./voorwaarden.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Voorwaarden</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./overfitting.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Over- en underfitting</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./logitmodel.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Logistisch model</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./voorbeelden.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Voorbeelden</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./referenties.html" class="sidebar-item-text sidebar-link">Referenties</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Inhoudsopgave</h2>
+   
+  <ul>
+  <li><a href="#covariantie" id="toc-covariantie" class="nav-link active" data-scroll-target="#covariantie"><span class="toc-section-number">4.1</span>  Covariantie</a></li>
+  <li><a href="#correlatiecoëfficient" id="toc-correlatiecoëfficient" class="nav-link" data-scroll-target="#correlatiecoëfficient"><span class="toc-section-number">4.2</span>  Correlatiecoëfficient</a>
+  <ul class="collapse">
+  <li><a href="#pearson" id="toc-pearson" class="nav-link" data-scroll-target="#pearson"><span class="toc-section-number">4.2.1</span>  Pearson</a></li>
+  <li><a href="#spearman" id="toc-spearman" class="nav-link" data-scroll-target="#spearman"><span class="toc-section-number">4.2.2</span>  Spearman</a></li>
+  <li><a href="#kendall" id="toc-kendall" class="nav-link" data-scroll-target="#kendall"><span class="toc-section-number">4.2.3</span>  Kendall</a></li>
+  </ul></li>
+  <li><a href="#correlatie-en-causaliteit" id="toc-correlatie-en-causaliteit" class="nav-link" data-scroll-target="#correlatie-en-causaliteit"><span class="toc-section-number">4.3</span>  Correlatie en causaliteit</a></li>
+  <li><a href="#correlatie-toetsing" id="toc-correlatie-toetsing" class="nav-link" data-scroll-target="#correlatie-toetsing"><span class="toc-section-number">4.4</span>  Correlatie toetsing</a>
+  <ul class="collapse">
+  <li><a href="#controle-aannames" id="toc-controle-aannames" class="nav-link" data-scroll-target="#controle-aannames"><span class="toc-section-number">4.4.1</span>  Controle aannames</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Correlatie</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Bij regressiemodellen wordt uitgegaan van een causaal (oorzakelijk) verband tussen variabelen. Het is echter ook mogelijk dat er een samenhang is tussen twee variabelen zonder dat vastgesteld kan worden waardoor dat komt. Het zou kunnen dat deze twee variabelen door een andere variabele beinvloed worden.</p>
+<p>Er is sprake van <strong>multicollineariteit</strong> wanneer meerdere onafhankelijke variabelen onderling sterk gecorreleerd zijn. Dit maakt het inschatten van de relatie tussen elke onafhankelijke variabele en de afhankelijke variabele moeilijk omdat de onafhankelijke variabelen elkaar onderling beinvloeden. Een sterke multicollineariteit zorgt voor een toename in de variantie van de uitkomsten en maakt de uitkomsten gevoelig voor kleine wijzigingen in het model. De statische gevolgtrekking uit de data wordt minder betrouwbaar en uitkomsten van machine learning modellen minder stabiel.</p>
+<div id="exm-correlatie" class="theorem example">
+<p><span class="theorem-title"><strong>Voorbeeld 4.1 </strong></span><strong>Eenvoudig voorbeeld</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">12345</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>mydf <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>, <span class="at">size =</span> <span class="dv">20</span>) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="at">n=</span><span class="dv">10</span>, <span class="at">mean=</span><span class="dv">1</span>, <span class="at">sd=</span><span class="dv">2</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">y =</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="at">n=</span><span class="dv">10</span>, <span class="at">mean=</span><span class="dv">10</span>, <span class="at">sd=</span><span class="dv">3</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">z =</span> (<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>, <span class="at">size =</span> <span class="dv">20</span>)<span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="at">n=</span><span class="dv">20</span>, <span class="at">mean=</span><span class="dv">1</span>, <span class="at">sd=</span><span class="dv">5</span>))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mydf)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="correlatie_files/figure-html/cor-vbsimpel-1.png" class="img-fluid" width="576"></p>
+</div>
+</div>
+<p>In de grafiek is tussen x en y een positieve correlatie waar te nemen.</p>
+</div>
+<section id="covariantie" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="covariantie"><span class="header-section-number">4.1</span> Covariantie</h2>
+<p>Een maatstaf voor de lineaire samenhang tussen twee kansvariabelen is de <strong>covariantie</strong>.</p>
+<p>Voor een populatie:</p>
+<p><span class="math display">\[cov(x,y) = \sigma_{xy} = \frac{1}{N}\sum_{i=1}^{N}(x_i-\mu_x)(y_i-\mu_y)\]</span></p>
+<p>Voor een steekproef:</p>
+<p><span class="math display">\[cov(x,y) = s_{xy} = \frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})\]</span></p>
+<p>Het interpreteren van de covariantie kan lastig zijn omdat deze niet gestandaardiseerd is. Standaardiseren wil zeggen dat je corrigeert voor de meetschaal van de variabele. Als bijvoorbeeld de massa van een voorwerp uitdrukt in kilogrammen, dan is de meetschaal duizend keer kleiner dan wanneer je de massa uitdrukt in grammen. De covariantie is afhankelijk van de meetschaal van de variabelen, en is dus groter als massa in grammen is uitgedrukt dan als massa in kilogrammen is uitgedrukt. Daarom wordt meestal met de <strong>correlatiecoëfficient</strong> gewerkt.</p>
+</section>
+<section id="correlatiecoëfficient" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="correlatiecoëfficient"><span class="header-section-number">4.2</span> Correlatiecoëfficient</h2>
+<p>Door de covariantie te delen door de standaarddeviaties corrigeer je wel voor de meetschalen. Daarom ligt de correlatiecoefficient altijd tussen -1 en +1. Het teken geeft de richting (positief of negatief) aan. Als er geen relatie bestaat tussen de twee variabelen is de correlatiecoëfficiënt 0.</p>
+<p>De correlatie tussen twee variabelen kun je in R berekenen met de functie <code>cor()</code>.</p>
+<p>syntax: <code>cor(x, y = NULL, method = c("pearson", "kendall", "spearman"))</code></p>
+<ul>
+<li><code>x</code>, een numerieke vector, matrix of data frame</li>
+<li><code>y</code>, NULL (default, en is gelijk aan y=x) of een vector, matris of data frame, met vergelijkbare afmetingen als x.</li>
+<li><code>method</code>, geeft aan welke correlatiecoëfficient berekend moet worden. Pearson is de meest gebruikte.</li>
+</ul>
+<section id="pearson" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="pearson"><span class="header-section-number">4.2.1</span> Pearson</h3>
+<p>Gebruik de Pearson correlatiecoëfficiënt om de mate van lineaire samenhang te beoordelen tussen twee kwantitatieve (interval of ratio) variabelen. De aanwezigheid van uitbijters beinvloedt de maat.</p>
+<p>Voor een populatie:</p>
+<p><span class="math display">\[\rho_{xy} = \frac{cov(x,y)}{\sigma_x \sigma_y} = \frac{\sigma_{xy}}{\sigma_x \sigma_y}\]</span></p>
+<p>Voor een steekproef:</p>
+<p><span class="math display">\[r(x,y) = \frac{s_{xy}}{s_x s_y}\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(mydf, <span class="at">method =</span> <span class="st">"pearson"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      x     y     z
+x 1.000 0.881 0.220
+y 0.881 1.000 0.192
+z 0.220 0.192 1.000</code></pre>
+</div>
+</div>
+<p>Ook hieruit blijkt dat er een sterke positieve correlatie is tussen x en y.</p>
+<p>Hou bij het interpreteren van de Pearson correlatiecoefficiënt wel het volgende in gedachten:</p>
+<ol type="1">
+<li>Correlatie impliceert geen oorzakelijk verband.</li>
+<li>Deze is gevoelig voor uitschieters (uitbijters).</li>
+<li>Het zegt alleen iets over een mogelijke lineaire samenhang en niets over een niet-lineaire samenhang.</li>
+</ol>
+<p>Wanneer de gegevensverzameling meerdere variabelen bevat, dan kun je correlatiecoefficiënt voor alle mogelijke combinaties van twee variabelen berekenen en deze afbeelden in een <strong>correlatiematrix</strong>.</p>
+<p>Als voorbeeld de berekening van de correlatiematrix voor <code>mtcars</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Berekening correlatie(matrix)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>cormat <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">cor</span>(mtcars, <span class="at">method =</span> <span class="st">"pearson"</span>), <span class="dv">2</span>) <span class="co"># op 2 decimalen</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>cormat</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+mpg   1.00 -0.85 -0.85 -0.78  0.68 -0.87  0.42  0.66  0.60  0.48 -0.55
+cyl  -0.85  1.00  0.90  0.83 -0.70  0.78 -0.59 -0.81 -0.52 -0.49  0.53
+disp -0.85  0.90  1.00  0.79 -0.71  0.89 -0.43 -0.71 -0.59 -0.56  0.39
+hp   -0.78  0.83  0.79  1.00 -0.45  0.66 -0.71 -0.72 -0.24 -0.13  0.75
+drat  0.68 -0.70 -0.71 -0.45  1.00 -0.71  0.09  0.44  0.71  0.70 -0.09
+wt   -0.87  0.78  0.89  0.66 -0.71  1.00 -0.17 -0.55 -0.69 -0.58  0.43
+qsec  0.42 -0.59 -0.43 -0.71  0.09 -0.17  1.00  0.74 -0.23 -0.21 -0.66
+vs    0.66 -0.81 -0.71 -0.72  0.44 -0.55  0.74  1.00  0.17  0.21 -0.57
+am    0.60 -0.52 -0.59 -0.24  0.71 -0.69 -0.23  0.17  1.00  0.79  0.06
+gear  0.48 -0.49 -0.56 -0.13  0.70 -0.58 -0.21  0.21  0.79  1.00  0.27
+carb -0.55  0.53  0.39  0.75 -0.09  0.43 -0.66 -0.57  0.06  0.27  1.00</code></pre>
+</div>
+</div>
+<p>Merk ook op dat de correlatiecoëfficiënten langs de diagonaal van de tabel allemaal gelijk zijn aan 1 omdat elke variabele uiteraard een perfecte correlatie met zichzelf heeft. Verder is de correlatiematrix symmetrisch. De waarden boven de diagonaal zijn gelijk aan de waarden onder de diagonaal. Vaak wordt deze bovenste helft dan ook weggelaten.</p>
+<p>Met package <code>corrplot</code> kun je de correlatiematrix visualiseren waardoor het beoordelen van de matrix gemakkelijker en sneller gaat.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>corrplot<span class="sc">::</span><span class="fu">corrplot</span>(cormat, </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">title =</span> <span class="st">"Correlatiematrix mtcars"</span>, </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">type =</span> <span class="st">"lower"</span>, </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">tl.cex =</span> <span class="fl">0.8</span>, <span class="at">tl.col =</span> <span class="st">"black"</span>, <span class="at">tl.srt =</span> <span class="dv">45</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="correlatie_files/figure-html/cor-corplot1-1.png" class="img-fluid" width="576"></p>
+</div>
+</div>
+<p>Positieve waarden worden in blauw weergegeven en negatieve waarden in rood. De intensiteit van de kleur is evenredig met de correlatiecoëfficiënt, dus hoe sterker de correlatie (d.w.z. hoe dichter bij -1 of 1), hoe donkerder de vakken.</p>
+<p>Er zijn veel argumenten beschikbaar om de opmaak te wijzigen. Een voorbeeld</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>corrplot<span class="sc">::</span><span class="fu">corrplot</span>(cormat, <span class="at">method =</span> <span class="st">"color"</span>, <span class="at">type =</span> <span class="st">"upper"</span>, <span class="at">outline =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">diag =</span> <span class="cn">FALSE</span>, <span class="at">addCoef.col =</span> <span class="st">"black"</span>, <span class="at">number.digits =</span> <span class="dv">2</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="correlatie_files/figure-html/cor-corplot2-1.png" class="img-fluid" width="576"></p>
+</div>
+</div>
+<ul>
+<li><code>method</code> bepaalt de vorm van het correlatieobject. Mogelijke waarden: “circle” (default), “square”, “ellipse”, “number”, “pie”, “shade” en “color”.</li>
+<li><code>type</code> bepaalt wat weergegeven wordt. Mogelijke waarden: “full”, “upper” of “lower”.</li>
+<li><code>outline</code> voor het weergeven van de zwarte omtrek bij cirkels, vierkanten, …</li>
+<li><code>diag</code> voor het weergeven van de correlatiecoefficienten op de hoofddiagonaal. Waarden: FALSE (default), TRUE</li>
+<li><code>addCoef.col</code> om de correlatiecoefficienten weer te geven in een bepaalde kleur.</li>
+<li><code>number.digits</code> het aantal decimalen</li>
+<li><code>sig.level</code> het significantieniveau (default 0.05)</li>
+</ul>
+</section>
+<section id="spearman" class="level3" data-number="4.2.2">
+<h3 data-number="4.2.2" class="anchored" data-anchor-id="spearman"><span class="header-section-number">4.2.2</span> Spearman</h3>
+<p>Gebruik de Spearman correlatiecoëfficient om de mate van samenhang te beoordelen tussen rangorde variabelen. Deze test kan worden gebruikt als de gegevens niet afkomstig zijn van een bivariate normale verdeling.</p>
+<p>Als voorbeeld de berekening van de correlatie tussen het aantal cylinders en het aantal versnellingen in de data <code>mtcars</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>cormat <span class="ot">&lt;-</span> <span class="fu">cor</span>(mtcars[, <span class="fu">c</span>(<span class="st">"cyl"</span>, <span class="st">"gear"</span>)], <span class="at">method =</span> <span class="st">"spearman"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(cormat, <span class="dv">2</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       cyl  gear
+cyl   1.00 -0.56
+gear -0.56  1.00</code></pre>
+</div>
+</div>
+</section>
+<section id="kendall" class="level3" data-number="4.2.3">
+<h3 data-number="4.2.3" class="anchored" data-anchor-id="kendall"><span class="header-section-number">4.2.3</span> Kendall</h3>
+<p>De Kendall correlatiecoëfficiënt kan ook gebruikt worden om de mate van samenhang te beoordelen tussen rangorde variabelen. Deze test kan worden gebruikt als de gegevens niet noodzakelijkerwijs afkomstig zijn van een bivariate normale verdeling. Het is echter een niet-parametrische maat.</p>
+</section>
+</section>
+<section id="correlatie-en-causaliteit" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="correlatie-en-causaliteit"><span class="header-section-number">4.3</span> Correlatie en causaliteit</h2>
+<p><strong>Correlatie is geen causaliteit</strong>. Het kan zijn dat er correlatie tussen twee variabelen is, maar dat een andere variabele de samenhang verklaart. Een bekend voorbeeld: er is een relatie tussen schoenmaat van kinderen en hoe goed ze kunnen lezen. Maar dat betekent niet dat je schoenmaat je leesniveau beïnvloedt (of, gekker nog, dat je grotere voeten krijgt als je goed kunt lezen). Nee, er is een derde ‘verstorende variabele’: leeftijd. Oudere kinderen hebben én grotere voeten én kunnen beter lezen.</p>
+<p>Voor causaliteit moet je onderzoeksmodel voldoen aan een aantal voorwaarden; (1) correlationeel verband, (2) tijdsvolgorde, eerst oorzaak dan gevolg, en (3) afwezigheid vs aanwezigheid oorzaak.</p>
+<p>Mooie voorbeelden van valse correlaties vind je op <a href="https://www.tylervigen.com/spurious-correlations">Spurious correlations</a></p>
+</section>
+<section id="correlatie-toetsing" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="correlatie-toetsing"><span class="header-section-number">4.4</span> Correlatie toetsing</h2>
+<p>Met de functie <code>cor.test</code> kun je een correlatietoetsing uitvoeren.</p>
+<p><code>cor.test(x, y, alternative, method, conf.level, ...)</code></p>
+<ul>
+<li><code>alternative</code>geeft de alternatieve hypothese aan. Waarden: “two.sided”, “greater”, “less”.</li>
+<li><code>method</code> bepaalt de te gebruiken methode. Waarden: “pearson”, “kendall”, “spearman”</li>
+<li><code>conf.level</code> bepaalt het betrouwbaarheidsinterval (alleen voor Pearson)</li>
+</ul>
+<p>De hypotheses zijn:</p>
+<ul>
+<li><span class="math inline">\(H_0: \rho = 0\)</span> (correlatiecoefficient =0, er is geen correlatie)</li>
+<li><span class="math inline">\(H_1: \rho \ne 0\)</span></li>
+</ul>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Opmerking
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Beslissingsregel: Als de p-waarde &lt; alpha (0.05) dan wordt de nulhypothese verworpen.</p>
+</div>
+</div>
+<p>Als voorbeeld wordt de ingebouwde dataset <code>mtcars</code> gebruikt. De samenhang tussen de variabelen <code>mpg</code> en <code>wt</code> wordt nu onderzocht.</p>
+<p><strong>Pearson</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(mtcars<span class="sc">$</span>mpg, mtcars<span class="sc">$</span>wt, <span class="at">method =</span> <span class="st">"pearson"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's product-moment correlation
+
+data:  mtcars$mpg and mtcars$wt
+t = -10, df = 30, p-value = 1e-10
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.934 -0.744
+sample estimates:
+   cor 
+-0.868 </code></pre>
+</div>
+</div>
+<p>De p-waarde is kleiner dan <span class="math inline">\(\alpha = 0,05\)</span>. Je kunt dus concluderen dat <code>wt</code> en <code>mpg</code> significant correleren met een correlatiecoëfficient van -0.87 en een p waarde van 1.29410^{-10}</p>
+<p><strong>Kendall</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(mtcars<span class="sc">$</span>mpg, mtcars<span class="sc">$</span>wt, <span class="at">method =</span> <span class="st">"kendall"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Kendall's rank correlation tau
+
+data:  mtcars$mpg and mtcars$wt
+z = -6, p-value = 7e-09
+alternative hypothesis: true tau is not equal to 0
+sample estimates:
+   tau 
+-0.728 </code></pre>
+</div>
+</div>
+<p><strong>Spearman</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(mtcars<span class="sc">$</span>mpg, mtcars<span class="sc">$</span>wt, <span class="at">method =</span> <span class="st">"spearman"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Spearman's rank correlation rho
+
+data:  mtcars$mpg and mtcars$wt
+S = 10292, p-value = 1e-11
+alternative hypothesis: true rho is not equal to 0
+sample estimates:
+   rho 
+-0.886 </code></pre>
+</div>
+</div>
+<p>Voor de visualisatie kun je <code>ggscatter()</code> uit package <code>ggpubr</code> gebruiken.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>ggpubr<span class="sc">::</span><span class="fu">ggscatter</span>(mtcars, <span class="at">x =</span> <span class="st">"mpg"</span>, <span class="at">y =</span> <span class="st">"wt"</span>, </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">add =</span> <span class="st">"reg.line"</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">cor.coef =</span> <span class="cn">TRUE</span>, <span class="at">cor.method =</span> <span class="st">"pearson"</span>, </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">xlab =</span> <span class="st">"Miles/gallon (us)"</span>, <span class="at">ylab =</span> <span class="st">"Weight (1000 lbs)"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-cor-scatter" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="correlatie_files/figure-html/fig-cor-scatter-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;4.1: Spreidingsdiagram</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="controle-aannames" class="level3" data-number="4.4.1">
+<h3 data-number="4.4.1" class="anchored" data-anchor-id="controle-aannames"><span class="header-section-number">4.4.1</span> Controle aannames</h3>
+<p><strong>1 - Is de covariantie lineair?</strong></p>
+<p>Ja, gezien de grafiek. In de situatie waarin de spreidingsdiagrammen gebogen patronen vertonen, heb je te te maken met niet-lineaire associatie tussen de twee variabelen.</p>
+<p><strong>2 - Volgen de gegevens van elk van de twee variabelen een normale verdeling?</strong></p>
+<p>Gebruik <em>Shapiro-Wilk</em> normaliteitstest.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(mtcars<span class="sc">$</span>mpg) <span class="co"># Shapiro-Wilk normality test voor mpg</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  mtcars$mpg
+W = 0.9, p-value = 0.1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(mtcars<span class="sc">$</span>wt)  <span class="co"># Shapiro-Wilk normality test voor wt</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  mtcars$wt
+W = 0.9, p-value = 0.09</code></pre>
+</div>
+</div>
+<p>De twee p-waarden zijn groter dan het significantieniveau 0,05, wat betekent dat de verdeling van de gegevens niet significant verschilt van de normale verdeling. Met andere woorden, we kunnen uitgaan van de normaliteit.</p>
+<p>Beoordeel de normaliteitsgrafiek.</p>
+<div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>ggpubr<span class="sc">::</span><span class="fu">ggqqplot</span>(mtcars<span class="sc">$</span>mpg, <span class="at">ylab =</span> <span class="st">"mpg"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>ggpubr<span class="sc">::</span><span class="fu">ggqqplot</span>(mtcars<span class="sc">$</span>wt, <span class="at">ylab =</span> <span class="st">"wt"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="fig-cor-test-normaliteit" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-cor-test-normaliteit-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="correlatie_files/figure-html/fig-cor-test-normaliteit-1.png" class="img-fluid figure-img" data-ref-parent="fig-cor-test-normaliteit" width="576"></p>
+<p></p><figcaption class="figure-caption">(a) mpg</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-cor-test-normaliteit-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="correlatie_files/figure-html/fig-cor-test-normaliteit-2.png" class="img-fluid figure-img" data-ref-parent="fig-cor-test-normaliteit" width="576"></p>
+<p></p><figcaption class="figure-caption">(b) wt</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;4.2: Normaliteitsgrafieken</figcaption><p></p>
+</figure>
+</div>
+</div>
+<p>Uit deze verdelingen kun je concluderen dat beide populaties uit normale verdelingen komen.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Opmerking
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Wanneer de gegevens niet normaal worden verspreid, dan is het aan te bevelen om de niet-parametrische correlatie te gebruiken, inclusief de op rang gebaseerde correlatietests van Spearman en Kendall.</p>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body" role="doc-bibliography" style="display: none">
+<div id="ref-FisherExactTest2022" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>1</strong>. </div><div class="csl-right-inline"><span>‘<a href="https://en.wikipedia.org/w/index.php?title=Fisher%27s_exact_test&amp;oldid=1117572309">Fisher’s Exact Test</a>’</span>, <em>Wikipedia</em>, (2022).</div>
+</div>
+<div id="ref-UnusualObservationsOutlier" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>2</strong>. </div><div class="csl-right-inline"><span>‘<span>Unusual Observations - Outlier, Leverage, and Influential Points</span>’</span>, <a href="https://www.theopeneducator.com/doe/Regression/outlier-leverage-influential-points">https://www.theopeneducator.com/doe/Regression/outlier-leverage-influential-points</a>.</div>
+</div>
+<div id="ref-buijsStatistiekOmMee1991" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>3</strong>. </div><div class="csl-right-inline"><strong>Buijs, A.</strong>, <span>‘<span>Statistiek om mee te werken</span>’</span>, Third dr., <span>Stenfert Kroese</span>, (1991).</div>
+</div>
+<div id="ref-chouldechovaRegressionDiagnosticPlots" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>4</strong>. </div><div class="csl-right-inline"><strong>Chouldechova, A.</strong>, <span>‘Regression Diagnostic Plots’</span>, <a href="https://www.andrew.cmu.edu/user/achoulde/94842/homework/regression_diagnostics.html">https://www.andrew.cmu.edu/user/achoulde/94842/homework/regression_diagnostics.html</a>.</div>
+</div>
+<div id="ref-datacampLinearRegressionTutorial" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>5</strong>. </div><div class="csl-right-inline"><strong>Datacamp</strong>, <span>‘R <span>Linear Regression Tutorial</span>: Lm <span>Function</span> in <span>R</span> with <span>Code Examples</span>’</span>, <a href="https://www.datacamp.com/tutorial/linear-regression-R">https://www.datacamp.com/tutorial/linear-regression-R</a>.</div>
+</div>
+<div id="ref-doringFindingSuitableLinear2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>6</strong>. </div><div class="csl-right-inline"><strong>Döring, M.</strong>, <span>‘Finding a <span>Suitable Linear Model</span> for <span>Ozone Prediction</span>’</span>, <em>Data Science Blog</em>, 2018. <a href="https://www.datascienceblog.net/post/machine-learning/improving_ozone_prediction/">https://www.datascienceblog.net/post/machine-learning/improving_ozone_prediction/</a>.</div>
+</div>
+<div id="ref-doringInterpretingLinearPrediction2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>7</strong>. </div><div class="csl-right-inline"><strong>Döring, M.</strong>, <span>‘Interpreting <span>Linear Prediction Models</span>’</span>, <em>Data Science Blog</em>, 2018. <a href="https://www.datascienceblog.net/post/machine-learning/linear_models/">https://www.datascienceblog.net/post/machine-learning/linear_models/</a>.</div>
+</div>
+<div id="ref-hackerearthBeginnersGuideRegression" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>8</strong>. </div><div class="csl-right-inline"><strong>Hackerearth</strong>, <span>‘Beginners <span>Guide</span> to <span>Regression Analysis</span> and <span>Plot Interpretations</span>’</span>, <a href="https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/beginners-guide-regression-analysis-plot-interpretations/tutorial/">https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/beginners-guide-regression-analysis-plot-interpretations/tutorial/</a>.</div>
+</div>
+<div id="ref-hackerearthPracticalGuideLogistic" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>9</strong>. </div><div class="csl-right-inline"><strong>Hackerearth</strong>, <span>‘Practical <span>Guide</span> to <span>Logistic Regression Analysis</span> in <span>R</span>’</span>, <a href="https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/logistic-regression-analysis-r/tutorial/">https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/logistic-regression-analysis-r/tutorial/</a>.</div>
+</div>
+<div id="ref-kassambaraLogisticRegressionEssentials2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>10</strong>. </div><div class="csl-right-inline"><strong>Kassambara, A.</strong>, <span>‘Logistic <span>Regression Essentials</span> in <span>R</span>’</span>, 2018. <a href="http://www.sthda.com/english/articles/36-classification-methods-essentials/151-logistic-regression-essentials-in-r/">http://www.sthda.com/english/articles/36-classification-methods-essentials/151-logistic-regression-essentials-in-r/</a>.</div>
+</div>
+<div id="ref-kassambaraMachineLearningEssentials2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>11</strong>. </div><div class="csl-right-inline"><strong>Kassambara, A.</strong>, <span>‘Machine <span>Learning Essentials</span>: <span>Practical Guide</span> in <span>R</span>’</span>, 1st edition dr., (2018).</div>
+</div>
+<div id="ref-universityofvirginiaUnderstandingDiagnosticPlots" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>12</strong>. </div><div class="csl-right-inline"><strong>University of Virginia</strong>, <span>‘Understanding <span>Diagnostic Plots</span> for <span>Linear Regression Analysis</span> | <span>University</span> of <span>Virginia Library Research Data Services</span> + <span>Sciences</span>’</span>, <a href="https://data.library.virginia.edu/diagnostic-plots/">https://data.library.virginia.edu/diagnostic-plots/</a>.</div>
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Gekopieerd!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Gekopieerd!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          // default icon
+          link.classList.add("external");
+      }
+    }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./catregressie.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Categoriale Regressie</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./voorwaarden.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Voorwaarden</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

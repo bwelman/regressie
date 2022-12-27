@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="nl" xml:lang="nl"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.280">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Regressie-analyse met R.">
+
+<title>Regressie - 8&nbsp; Voorbeelden</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./referenties.html" rel="next">
+<link href="./logitmodel.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "Geen resultaten",
+    "search-matching-documents-text": "Gevonden documenten",
+    "search-copy-link-title": "Kopieer link om te zoeken",
+    "search-hide-matches-text": "Extra overeenkomsten verbergen",
+    "search-more-match-text": "meer overeenkomst in dit document",
+    "search-more-matches-text": "meer overeenkomsten in dit document",
+    "search-clear-button-title": "Wissen",
+    "search-detached-cancel-button-title": "Annuleren",
+    "search-submit-button-title": "Verzenden"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Voorbeelden</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Regressie</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Inleiding</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linmodel.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Lineair model</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./diagnoses.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Diagnostische grafieken</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./catregressie.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Categoriale Regressie</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./correlatie.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Correlatie</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./voorwaarden.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Voorwaarden</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./overfitting.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Over- en underfitting</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./logitmodel.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Logistisch model</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./voorbeelden.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Voorbeelden</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./referenties.html" class="sidebar-item-text sidebar-link">Referenties</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Inhoudsopgave</h2>
+   
+  <ul>
+  <li><a href="#inkomen-ervaring" id="toc-inkomen-ervaring" class="nav-link active" data-scroll-target="#inkomen-ervaring"><span class="toc-section-number">8.1</span>  inkomen-ervaring</a></li>
+  <li><a href="#kinderlengte" id="toc-kinderlengte" class="nav-link" data-scroll-target="#kinderlengte"><span class="toc-section-number">8.2</span>  kinderlengte</a></li>
+  <li><a href="#sparen" id="toc-sparen" class="nav-link" data-scroll-target="#sparen"><span class="toc-section-number">8.3</span>  sparen</a>
+  <ul class="collapse">
+  <li><a href="#model-met-kwadratische-term" id="toc-model-met-kwadratische-term" class="nav-link" data-scroll-target="#model-met-kwadratische-term">Model met kwadratische term</a></li>
+  <li><a href="#model-met-uitsluiting-waarneming" id="toc-model-met-uitsluiting-waarneming" class="nav-link" data-scroll-target="#model-met-uitsluiting-waarneming">Model met uitsluiting waarneming</a></li>
+  <li><a href="#conclusie" id="toc-conclusie" class="nav-link" data-scroll-target="#conclusie">Conclusie</a></li>
+  </ul></li>
+  <li><a href="#druk-temperatuur" id="toc-druk-temperatuur" class="nav-link" data-scroll-target="#druk-temperatuur"><span class="toc-section-number">8.4</span>  druk-temperatuur</a></li>
+  <li><a href="#aandelenindex" id="toc-aandelenindex" class="nav-link" data-scroll-target="#aandelenindex"><span class="toc-section-number">8.5</span>  aandelenindex</a></li>
+  <li><a href="#luchtkwaliteit" id="toc-luchtkwaliteit" class="nav-link" data-scroll-target="#luchtkwaliteit"><span class="toc-section-number">8.6</span>  luchtkwaliteit</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Voorbeelden</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="inkomen-ervaring" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="inkomen-ervaring"><span class="header-section-number">8.1</span> inkomen-ervaring</h2>
+<p>In dit voorbeeld <span class="citation" data-cites="buijsStatistiekOmMee1991">[<a href="referenties.html#ref-buijsStatistiekOmMee1991" role="doc-biblioref">3</a>, pag. 303]</span> wordt het verband onderzocht tussen het inkomen (x €1000) en het aantal jaren ervaring van een groep managers.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>mydata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ervaring =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">8</span>, <span class="dv">15</span>, <span class="dv">12</span>), </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">inkomen =</span> <span class="fu">c</span>(<span class="dv">60</span>, <span class="dv">80</span>, <span class="dv">90</span>, <span class="dv">120</span>, <span class="dv">100</span>))</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>mydata</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  ervaring inkomen
+1        5      60
+2       10      80
+3        8      90
+4       15     120
+5       12     100</code></pre>
+</div>
+</div>
+<p>Allereerst wordt een spreidingsdiagram gemaakt.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(inkomen <span class="sc">~</span> ervaring, <span class="at">data =</span> mydata,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Ervaring (jaren)"</span>, <span class="at">ylab =</span> <span class="st">"Inkomen (x €1000)"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-ink-erv" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-ink-erv-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;8.1: Relatie tussen inkomen en aantal jaren ervaring.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Opstellen lineair model: <span class="math inline">\(inkomen = b_0 + b1 * ervaring\)</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(inkomen <span class="sc">~</span> ervaring, <span class="at">data =</span> mydata)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = inkomen ~ ervaring, data = mydata)
+
+Residuals:
+     1      2      3      4      5 
+ -2.41 -10.00  11.03   2.41  -1.03 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept)    34.83      12.26    2.84    0.066 .
+ervaring        5.52       1.16    4.75    0.018 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 8.84 on 3 degrees of freedom
+Multiple R-squared:  0.883, Adjusted R-squared:  0.844 
+F-statistic: 22.6 on 1 and 3 DF,  p-value: 0.0177</code></pre>
+</div>
+</div>
+<p>De regressievergelijking wordt dus <span class="math inline">\(inkomen = 34.828 + 5.517*ervaring\)</span></p>
+<p>De geschatte waarden (berekend volgens de regressievergelijking) en residuen zijn</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>model<span class="sc">$</span>fitted.values</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    1     2     3     4     5 
+ 62.4  90.0  79.0 117.6 101.0 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model<span class="sc">$</span>residuals</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     1      2      3      4      5 
+ -2.41 -10.00  11.03   2.41  -1.03 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model<span class="sc">$</span>residuals, </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Residuen model Inkomen-Ervaring"</span>, <span class="at">ylab =</span> <span class="st">"Residuen"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fu">mean</span>(model<span class="sc">$</span>residuals))</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-ink-erv-residu" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-ink-erv-residu-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;8.2: Residuen bij lineair model Inkomen-Ervaring.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Je kunt zien dat de residuen willekeurig verdeeld zijn en het gemiddelde nagenoeg 0 is.</p>
+</section>
+<section id="kinderlengte" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="kinderlengte"><span class="header-section-number">8.2</span> kinderlengte</h2>
+<p>Van 12 kinderen is de leeftijd (jaren) en lengte (cm bepaald). Maak een model waarbij de lengte verklaard wordt uit de leeftijd.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>kind <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">leeftijd =</span> <span class="fu">seq</span>(<span class="dv">18</span>,<span class="dv">29</span>),</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">lengte =</span> <span class="fu">c</span>(<span class="fl">76.1</span>,<span class="fl">77.0</span>,<span class="fl">78.1</span>,<span class="fl">78.2</span>,<span class="fl">78.8</span>,<span class="fl">79.7</span>,<span class="fl">79.9</span>,<span class="fl">81.1</span>,<span class="fl">81.2</span>,<span class="fl">81.8</span>,<span class="fl">82.8</span>,<span class="fl">83.5</span>))</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># spreidingsdiagram</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lengte <span class="sc">~</span> leeftijd, <span class="at">data =</span> kind,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Leeftijd (maanden)"</span>, <span class="at">ylab =</span> <span class="st">"Lengte (cm)"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-kind-data" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-kind-data-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;8.3: Relatie tussen lengte en leeftijd van 12 kinderen.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Het model wordt <span class="math inline">\(\text{lengte} = b_0 + b_1\times\text{leeftijd}\)</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>kind.model <span class="ot">&lt;-</span> <span class="fu">lm</span>(lengte <span class="sc">~</span> leeftijd, <span class="at">data =</span> kind)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(kind.model)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = lengte ~ leeftijd, data = kind)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-0.2724 -0.2425 -0.0276  0.1601  0.4724 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  64.9283     0.5084   127.7  &lt; 2e-16 ***
+leeftijd      0.6350     0.0214    29.7  4.4e-11 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.256 on 10 degrees of freedom
+Multiple R-squared:  0.989, Adjusted R-squared:  0.988 
+F-statistic:  880 on 1 and 10 DF,  p-value: 4.43e-11</code></pre>
+</div>
+</div>
+<p>De regressievergelijking wordt dus <span class="math inline">\(\text{lengte} = 64.9283 + 0.635\times\text{leeftijd}\)</span>.</p>
+<p>Het model wordt nu uitgebreid door ook het aantal broers en zussen (variabele <code>broerzus</code>) in de formule op te nemen. het model wordt dan</p>
+<p><span class="math inline">\(\text{lengte} = b_0 + b_1\times\text{leeftijd} + b_2\times\text{broerzus}\)</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>kind2 <span class="ot">&lt;-</span> kind <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">broerzus =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">5</span>))</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>kind2.model <span class="ot">&lt;-</span> <span class="fu">lm</span>(lengte <span class="sc">~</span> leeftijd <span class="sc">+</span> broerzus, <span class="at">data =</span> kind2)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(kind2.model)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = lengte ~ leeftijd + broerzus, data = kind2)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-0.2630 -0.2246 -0.0202  0.1610  0.4975 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  64.9055     0.5353  121.26  9.0e-16 ***
+leeftijd      0.6375     0.0234   27.25  5.9e-10 ***
+broerzus     -0.0177     0.0473   -0.37     0.72    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.268 on 9 degrees of freedom
+Multiple R-squared:  0.989, Adjusted R-squared:  0.986 
+F-statistic:  402 on 2 and 9 DF,  p-value: 1.58e-09</code></pre>
+</div>
+</div>
+<p>De coëfficient voor de nieuwe verklarende variabele <code>broerzus</code> is negatief. Voor elke broer/zus meer neemt de lengte met 0.02 cm af.</p>
+<p>Voor <code>leeftijd</code> is de p-waarde significant, deze is dus een goede voorspeller voor <code>lengte</code>. Maar de p-waarde voor <code>broerzus</code> (het aantal broers en zussen) is niet significant, deze variabele past dus niet goed in het model.</p>
+</section>
+<section id="sparen" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="sparen"><span class="header-section-number">8.3</span> sparen</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>sparen <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/inkomen-spaargeld.csv"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sparen)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Jaar Spaargeld Inkomen
+1 1974     12298   64968
+2 1975     14196   69233
+3 1976     17320   73824
+4 1977     19995   85267
+5 1978     23601   91507
+6 1979     24213   99632</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Spaargeld <span class="sc">~</span>Inkomen, <span class="at">data =</span> sparen)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-sparen-data" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-sparen-data-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;8.4: Voorbeeld sparen met relatie tussen Spaargeld en Inkomen.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>uitkomstvariabele: <code>Spaargeld</code></li>
+<li>voorspelvariabele: <code>Inkomen</code></li>
+</ul>
+<p>Algemene vorm regressievergelijking: <span class="math inline">\(Spaargeld = b_0 + b_1 * Inkomen\)</span></p>
+<p>Een lineaire relatie is in de grafiek duidelijk zichtbaar.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>model.sparen <span class="ot">&lt;-</span> <span class="fu">lm</span>(Spaargeld <span class="sc">~</span> Inkomen, <span class="at">data =</span> sparen)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model.sparen)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = Spaargeld ~ Inkomen, data = sparen)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-13036  -4959   -317   5368  16969 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) -1.10e+04   2.46e+03   -4.47  0.00024 ***
+Inkomen      2.97e-01   6.01e-03   49.40  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 7330 on 20 degrees of freedom
+Multiple R-squared:  0.992, Adjusted R-squared:  0.991 
+F-statistic: 2.44e+03 on 1 and 20 DF,  p-value: &lt;2e-16</code></pre>
+</div>
+</div>
+<p>De vergelijking van de regressielijn wordt dan <span class="math inline">\(Spaargeld = -10990 + 0.297 * Inkomen\)</span></p>
+<p>De p-waarde voor Inkomen is significant (&lt; 0.05) en dus is de variabele significant voor het voorspellen van Spaargeld.</p>
+<p><em>Adjusted R-squared: 0.9915</em> houdt in dat het model 99% van de variatie in de gegevens verklaart.</p>
+<p><strong>Diagnostische grafieken</strong></p>
+<div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model.sparen)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="fig-sparen-diagnoses" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-sparen-diagnoses-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-sparen-diagnoses-1.png" class="img-fluid figure-img" data-ref-parent="fig-sparen-diagnoses" width="576"></p>
+<p></p><figcaption class="figure-caption">(a) Residuals - Fitted values</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-sparen-diagnoses-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-sparen-diagnoses-2.png" class="img-fluid figure-img" data-ref-parent="fig-sparen-diagnoses" width="576"></p>
+<p></p><figcaption class="figure-caption">(b) Normal Q-Q</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-sparen-diagnoses-3" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-sparen-diagnoses-3.png" class="img-fluid figure-img" data-ref-parent="fig-sparen-diagnoses" width="576"></p>
+<p></p><figcaption class="figure-caption">(c) Scale-Location</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-sparen-diagnoses-4" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-sparen-diagnoses-4.png" class="img-fluid figure-img" data-ref-parent="fig-sparen-diagnoses" width="576"></p>
+<p></p><figcaption class="figure-caption">(d) Residuals - Leverage</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;8.5: Diagnostische grafieken lineair model Sparen-Inkomen.</figcaption><p></p>
+</figure>
+</div>
+</div>
+<ul>
+<li>De grafiek <em>Residuals-Fitted</em> laat een gebogen patroon zien. Dit zou kunnen betekenen dat je een beter model kunt krijgen door een kwadratische term aan het model toe te voegen.</li>
+<li>De grafiek <em>Residuals-Leverage</em> laat zien dat waarneming 22 een grote invloed op het model heeft. Dit zou kunnen betekenen dat je waarneming 22 uit moet sluiten voor het maken van een model.</li>
+</ul>
+<p>Je hebt nu drie keuzes:</p>
+<ol type="1">
+<li>Keur de opname van waarneming 22 goed en houd het model zoals het is.</li>
+<li>Maak een nieuw model en neem daarin een kwadratische term op.</li>
+<li>Sluit waarneming 22 uit en maak een nieuw model.</li>
+</ol>
+<p>De laatste twee keuzes worden verder geanalyseerd.</p>
+<section id="model-met-kwadratische-term" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="model-met-kwadratische-term">Model met kwadratische term</h3>
+<p>Regressievergelijking: <span class="math inline">\(Spaargeld = b_0 + b_1*Inkomen + b_2*Inkomen^2\)</span></p>
+<p>Om in R een variabele <span class="math inline">\(x^2\)</span> te maken moet je deze definieren met <code>I(x^2)</code>.</p>
+<p>Een alternatief is met gebruik van de polynoomfunctie <code>poly(x, degree=2, raw = TRUE)</code>. Deze laatste heeft als voordeel dat je eenvoudiger hogere graads polynomen kunt maken.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>model2.sparen <span class="ot">&lt;-</span>  <span class="fu">lm</span>(Spaargeld <span class="sc">~</span> Inkomen <span class="sc">+</span> <span class="fu">I</span>(Inkomen<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> sparen)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co"># model2.sparen &lt;-  lm(Spaargeld ~ poly(Inkomen, degree=2, raw = TRUE), data = sparen)</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2.sparen)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = Spaargeld ~ Inkomen + I(Inkomen^2), data = sparen)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-10304  -2027    252   2149  10353 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  -5.94e+02   2.48e+03   -0.24     0.81    
+Inkomen       2.19e-01   1.49e-02   14.64  8.4e-12 ***
+I(Inkomen^2)  8.56e-08   1.58e-08    5.42  3.1e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 4710 on 19 degrees of freedom
+Multiple R-squared:  0.997, Adjusted R-squared:  0.996 
+F-statistic: 2.97e+03 on 2 and 19 DF,  p-value: &lt;2e-16</code></pre>
+</div>
+</div>
+<div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model2.sparen)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="fig-sparen-model2-diagnoses" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-sparen-model2-diagnoses-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-sparen-model2-diagnoses-1.png" class="img-fluid figure-img" data-ref-parent="fig-sparen-model2-diagnoses" width="576"></p>
+<p></p><figcaption class="figure-caption">(a) Residuals - Fitted values</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-sparen-model2-diagnoses-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-sparen-model2-diagnoses-2.png" class="img-fluid figure-img" data-ref-parent="fig-sparen-model2-diagnoses" width="576"></p>
+<p></p><figcaption class="figure-caption">(b) Normal Q-Q</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-sparen-model2-diagnoses-3" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-sparen-model2-diagnoses-3.png" class="img-fluid figure-img" data-ref-parent="fig-sparen-model2-diagnoses" width="576"></p>
+<p></p><figcaption class="figure-caption">(c) Scale-Location</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-sparen-model2-diagnoses-4" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-sparen-model2-diagnoses-4.png" class="img-fluid figure-img" data-ref-parent="fig-sparen-model2-diagnoses" width="576"></p>
+<p></p><figcaption class="figure-caption">(d) Residuals - Leverage</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;8.6: Diagnostische grafieken voor het model met een kwadratische term.</figcaption><p></p>
+</figure>
+</div>
+</div>
+<p>De diagnostische grafieken zijn nu veel beter. Residuen zijn bijna horizontaal en goed verspreid. Verspreiding is bijna uniform en geen enkele punt heeft een teveel aan leverage. De Q-Q grafiek laat echter zien dat enkele punten niet op de Normaal lijn staan, maar dat kan acceptabel zijn.</p>
+</section>
+<section id="model-met-uitsluiting-waarneming" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="model-met-uitsluiting-waarneming">Model met uitsluiting waarneming</h3>
+<p>Waarneming 22 wordt uitgesloten.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>sparen21 <span class="ot">&lt;-</span> sparen[<span class="dv">1</span><span class="sc">:</span><span class="dv">21</span>,]</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>model.sparen21 <span class="ot">&lt;-</span>  <span class="fu">lm</span>(Spaargeld <span class="sc">~</span> Inkomen, <span class="at">data =</span> sparen21)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model.sparen21)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = Spaargeld ~ Inkomen, data = sparen21)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+ -8601  -3585  -1088   4294  15186 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) -8.69e+03   2.06e+03   -4.21  0.00047 ***
+Inkomen      2.86e-01   5.69e-03   50.25  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 5840 on 19 degrees of freedom
+Multiple R-squared:  0.993, Adjusted R-squared:  0.992 
+F-statistic: 2.53e+03 on 1 and 19 DF,  p-value: &lt;2e-16</code></pre>
+</div>
+</div>
+<div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model.sparen21)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="fig-sparen21-model-diagnoses" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-sparen21-model-diagnoses-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-sparen21-model-diagnoses-1.png" class="img-fluid figure-img" data-ref-parent="fig-sparen21-model-diagnoses" width="576"></p>
+<p></p><figcaption class="figure-caption">(a) Residuals - Fitted values</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-sparen21-model-diagnoses-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-sparen21-model-diagnoses-2.png" class="img-fluid figure-img" data-ref-parent="fig-sparen21-model-diagnoses" width="576"></p>
+<p></p><figcaption class="figure-caption">(b) Normal Q-Q</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-sparen21-model-diagnoses-3" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-sparen21-model-diagnoses-3.png" class="img-fluid figure-img" data-ref-parent="fig-sparen21-model-diagnoses" width="576"></p>
+<p></p><figcaption class="figure-caption">(c) Scale-Location</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-sparen21-model-diagnoses-4" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-sparen21-model-diagnoses-4.png" class="img-fluid figure-img" data-ref-parent="fig-sparen21-model-diagnoses" width="576"></p>
+<p></p><figcaption class="figure-caption">(d) Residuals - Leverage</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;8.7: Diagnostische grafieken voor het model met uitsluiting waarneming.</figcaption><p></p>
+</figure>
+</div>
+</div>
+<p>Alle diagnostische grafieken lijken niet goed, ze zijn zelfs slechter dan het oorspronkelijke model.</p>
+</section>
+<section id="conclusie" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="conclusie">Conclusie</h3>
+<p>Tot zo ver komt het model met de kwadratische term het beste voort uit de analyse van de diagnostische grafieken.</p>
+</section>
+</section>
+<section id="druk-temperatuur" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="druk-temperatuur"><span class="header-section-number">8.4</span> druk-temperatuur</h2>
+<p>In dit voorbeeld wordt de relatie tussen druk en temperatuur onderzocht.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>druktemp <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">temp =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">10</span>, <span class="at">to =</span> <span class="dv">100</span>, <span class="at">by =</span> <span class="dv">10</span>), </span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">druk =</span> <span class="fu">c</span>(<span class="fl">18.5</span>, <span class="fl">24.9</span>, <span class="fl">30.3</span>, <span class="fl">43.7</span>, <span class="fl">80.1</span>, <span class="fl">118.5</span>, <span class="fl">169.9</span>, <span class="fl">228.3</span>, <span class="fl">302.7</span>,<span class="fl">385.1</span>))</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co"># lineair model</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(druk <span class="sc">~</span> temp, <span class="at">data =</span> druktemp)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Spreidingsdiagram met regressielijn</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(druk <span class="sc">~</span> temp, <span class="at">data =</span> druktemp)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">reg =</span> model1)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1) <span class="co"># samenvatting model</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = druk ~ temp, data = druktemp)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+ -41.9  -34.7  -10.9   24.7   63.5 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   -81.50      29.14   -2.80    0.023 *  
+temp            4.03       0.47    8.58  2.6e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 42.7 on 8 degrees of freedom
+Multiple R-squared:  0.902, Adjusted R-squared:  0.89 
+F-statistic: 73.7 on 1 and 8 DF,  p-value: 2.62e-05</code></pre>
+</div>
+<div class="cell-output-display">
+<div id="fig-druktemp-data" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-druktemp-data-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;8.8: Relatie Druk - Temperatuur</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Beide <span class="math inline">\(R^2\)</span> waarden zijn goed. Idealiter zouden de residuen in een grafiek er willekeurig uit moeten zien.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model1<span class="sc">$</span>residuals, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">col =</span> <span class="st">"red"</span>, </span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Residuen Druk~Temperatuur"</span>, <span class="at">ylab =</span> <span class="st">"Residuen"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-druktemp-model1-residu" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-druktemp-model1-residu-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;8.9: Residuen bij het lineair model druk-temperatuur.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Je ziet dat het gemiddelde wel ongeveer nul is, maar de waarden vertonen geen willekeurig karakter, het diagram ziet er als een parabool uit. Dat betekent dat er misschien een verborgen patroon is dat niet door het lineaire model wordt meegenomen. wat je nu kunt doen is de variabele transformeren of een term toevoegen, bijv. <span class="math inline">\(x^2, x^3, ln(x), ln(x+1), \sqrt(x), \frac{1}{x}, exp(x)\)</span>.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Opmerking
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Vanwege het paraboolkarakter van de residuen wordt een kwadratische term toegevoegd.</p>
+</div>
+</div>
+<p>Om verwarring te voorkomen wordt de hoofdletter I voor de transformatie gezet.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(druk <span class="sc">~</span> temp <span class="sc">+</span> <span class="fu">I</span>(temp<span class="sc">^</span><span class="dv">2</span>),  <span class="at">data =</span> druktemp)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = druk ~ temp + I(temp^2), data = druktemp)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-4.605 -1.633  0.555  1.180  4.827 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 33.75000    3.61559    9.33  3.4e-05 ***
+temp        -1.73159    0.15100  -11.47  8.6e-06 ***
+I(temp^2)    0.05239    0.00134   39.16  1.8e-09 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 3.07 on 7 degrees of freedom
+Multiple R-squared:     1,  Adjusted R-squared:  0.999 
+F-statistic: 7.86e+03 on 2 and 7 DF,  p-value: 1.86e-12</code></pre>
+</div>
+</div>
+<p>De p-waarden zijn nu veel kleiner geworden, De <span class="math inline">\(R^2\)</span>-waarden zijn bijna gelijk aan 1 geworden. Dus het model is behoorlijk verbeterd. Van dit nieuwe model wordt nu ook een grafiek van de residuen gemaakt.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model2<span class="sc">$</span>residuals, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">col =</span> <span class="st">"red"</span>, </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Druk~Temperatuur model met kwadratische term"</span>, <span class="at">ylab =</span> <span class="st">"Residuen"</span>)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-druktemp-model2-residu" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-druktemp-model2-residu-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;8.10: Residuen bij lineair model Lengte~Leeftijd waaraan een kwadratische term is toegevoegd.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Er is nu geen patroon te zien, de residuen zijn behoorlijk willekeurig. Het model is nu goed.</p>
+</section>
+<section id="aandelenindex" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="aandelenindex"><span class="header-section-number">8.5</span> aandelenindex</h2>
+<p>De dataset <code>economiedata.csv</code> bevat een gefingeerde verzameling economische gegevens met de variabelen <code>Jaar</code>, <code>Maand</code>, <code>Rentepercentage</code>, <code>Werkloosheidspercentage</code> en <code>Aandelenindex</code>. Maak een lineair model van <code>Aandelenindex</code> op basis van <code>Rentepercentage</code> en <code>Werkloosheidspercentage</code>.</p>
+<ul>
+<li>uitkomstvariabele
+<ul>
+<li><code>Aandelenindex</code></li>
+</ul></li>
+<li>voorspelvariabelen
+<ul>
+<li><code>Rentepercentage</code></li>
+<li><code>Werkloosheidspercentage</code></li>
+</ul></li>
+</ul>
+<p><strong>Data</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>economiedata <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/economiedata.csv"</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(economiedata)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Jaar Maand Rentepercentage Werkloosheidspercentage Aandelenindex
+1 2016     1            1.75                     6.1           719
+2 2016     2            1.75                     6.2           704
+3 2016     3            1.75                     6.2           822
+4 2016     4            1.75                     5.9           876
+5 2016     5            1.75                     6.1           866
+6 2016     6            1.75                     6.1           884</code></pre>
+</div>
+</div>
+<p>Allereerst wordt visueel beoordeeld of er een (lineaire) relatie is tussen de afhankelijke variabele en elk van de onafhankelijke variabelen afzonderlijk.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Aandelenindex <span class="sc">~</span> Rentepercentage, <span class="at">data =</span> economiedata)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-aandelen-rente" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-aandelen-rente-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;8.11: Relatie tussen aandelenindex en rentepercentage.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Er is een positief lineair verband te zien, als het Rentepercentage omhoog gaat, gaat ook de Aandelenindex omhoog.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Aandelenindex <span class="sc">~</span> Werkloosheidspercentage, <span class="at">data =</span> economiedata)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/aandelen-werkloosheid-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Relatie tussen aandelenindex en werkloosheidspercentage.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Er is een negatief lineair verband te zien, als het Werkloosheidspercentage omhoog gaat, gaat de Aandelenindex omlaag.</p>
+<p><strong>Model</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(Aandelenindex <span class="sc">~</span> Rentepercentage <span class="sc">+</span> Werkloosheidspercentage, </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> economiedata)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model, <span class="at">correlation =</span> <span class="cn">TRUE</span>) <span class="co"># met extra een matrix van de correlaties</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = Aandelenindex ~ Rentepercentage + Werkloosheidspercentage, 
+    data = economiedata)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-158.21  -41.67   -6.25   57.74  118.81 
+
+Coefficients:
+                        Estimate Std. Error t value Pr(&gt;|t|)   
+(Intercept)                 1798        899    2.00   0.0586 . 
+Rentepercentage              346        111    3.10   0.0054 **
+Werkloosheidspercentage     -250        118   -2.12   0.0460 * 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 70.6 on 21 degrees of freedom
+Multiple R-squared:  0.898, Adjusted R-squared:  0.888 
+F-statistic: 92.1 on 2 and 21 DF,  p-value: 4.04e-11
+
+Correlation of Coefficients:
+                        (Intercept) Rentepercentage
+Rentepercentage         -0.96                      
+Werkloosheidspercentage -1.00        0.93          </code></pre>
+</div>
+</div>
+</section>
+<section id="luchtkwaliteit" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="luchtkwaliteit"><span class="header-section-number">8.6</span> luchtkwaliteit</h2>
+<p>Dit voorbeeld is geïnspireerd door een artikel in Data Science Blog <span class="citation" data-cites="doringInterpretingLinearPrediction2018">[<a href="referenties.html#ref-doringInterpretingLinearPrediction2018" role="doc-biblioref">7</a>]</span> en gebruikt de in package <code>datasets</code> aanwezige gegevensverzameling <code>airquality</code>. Deze dataset bevat metingen van de luchtkwaliteit in New York van mei tot september 1973. Er zijn 153 waarnemingen van 6 variabelen:</p>
+<ul>
+<li><p><code>Ozone</code> - gemiddelde hoeveelheid ozon in parts per billion (ppb)</p></li>
+<li><p><code>Solar.R</code> - zonnestraling in Langleys (lang)</p></li>
+<li><p><code>Wind</code> - gemiddelde windsnelheid in miles per hour (mph)</p></li>
+<li><p><code>Temp</code> - maximale dagelijkse temperatuur in graden Fahrenheit op La Guardia Airport.</p></li>
+<li><p><code>Month</code> - maand (nummer 1-12)</p></li>
+<li><p><code>Day</code> - dag ( nummer 1-31)</p></li>
+</ul>
+<p>Voor de analyse kunnen maand en dag worden weggelaten. Verder worden de waarnemingen met ontbrekende waarden verwijderd.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>goed <span class="ot">&lt;-</span> <span class="fu">complete.cases</span>(airquality)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>aqdata <span class="ot">&lt;-</span> airquality[goed,] <span class="sc">%&gt;%</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(Ozone, Solar.R, Wind, Temp)</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(aqdata)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   111 obs. of  4 variables:
+ $ Ozone  : int  41 36 12 18 23 19 8 16 11 14 ...
+ $ Solar.R: int  190 118 149 313 299 99 19 256 290 274 ...
+ $ Wind   : num  7.4 8 12.6 11.5 8.6 13.8 20.1 9.7 9.2 10.9 ...
+ $ Temp   : int  67 72 74 62 65 59 61 69 66 68 ...</code></pre>
+</div>
+</div>
+<p><strong>Onderzoeksvraag</strong></p>
+<p>Kun je het ozonniveau voorspellen op basis van zonnestraling, windsnelheid en temperatuur?</p>
+<p><strong>Verkenning data</strong></p>
+<p>Om te zien of de aannames van het lineaire model geschikt zijn voor de beschikbare gegevens, worden de correlaties tussen de variabelen bekeken: een scatterplot en de correlatiecoëfficienten.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(aqdata)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(aqdata)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         Ozone Solar.R   Wind   Temp
+Ozone    1.000   0.348 -0.612  0.699
+Solar.R  0.348   1.000 -0.127  0.294
+Wind    -0.612  -0.127  1.000 -0.497
+Temp     0.699   0.294 -0.497  1.000</code></pre>
+</div>
+<div class="cell-output-display">
+<div id="fig-aq-correlaties" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-aq-correlaties-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;8.12: Correlaties tussen de variabelen.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Conclusies</p>
+<ul>
+<li><p><code>Ozone</code> heeft een negatieve correlatie met <code>Wind</code>.</p></li>
+<li><p><code>Ozone</code> heeft een positievecorrelatie met <code>Temp</code>.</p></li>
+</ul>
+<p>Het zou dus mogelijk moeten zijn om een lineair model te maken dat het ozonniveau voorspelt met de kemerken.</p>
+<p><strong>Splitsing in training en test set</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>trainRijnummers <span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(<span class="at">y =</span> aqdata<span class="sc">$</span>Ozone, <span class="at">p=</span><span class="fl">0.8</span>, <span class="at">list =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>trainData <span class="ot">&lt;-</span> aqdata[trainRijnummers, ]</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>testData <span class="ot">&lt;-</span> aqdata[<span class="sc">-</span>trainRijnummers, ]</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Lineair model</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(Ozone <span class="sc">~</span> Solar.R <span class="sc">+</span> Wind <span class="sc">+</span> Temp, <span class="at">data =</span> trainData)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>model.samenvatting <span class="ot">&lt;-</span> <span class="fu">summary</span>(model)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>model.samenvatting</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = Ozone ~ Solar.R + Wind + Temp, data = trainData)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-39.83 -14.00  -3.95   9.98  95.80 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) -66.0175    27.4527   -2.40    0.018 *  
+Solar.R       0.0739     0.0284    2.60    0.011 *  
+Wind         -3.3171     0.7500   -4.42  2.8e-05 ***
+Temp          1.6285     0.3065    5.31  8.4e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 21.9 on 86 degrees of freedom
+Multiple R-squared:  0.596, Adjusted R-squared:  0.582 
+F-statistic: 42.3 on 3 and 86 DF,  p-value: &lt;2e-16</code></pre>
+</div>
+</div>
+<p>De mediaan van de residuen is -3.952, wat suggereert dat het model over het algemeen wat hogere ozonwaarden voorspelt dan waargenomen. De grote maximumwaarde geeft echter aan dat sommige uitbijtervoorspellingen ook veel te laag zijn</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Opmerking
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Residu = waargenomen - verwacht. Ofwel verwacht = waargenomen - residu. Omdat de mediaanwaarde ongeveer -4 is, is de verwachte waarde = waargenomen waarde + 4.</p>
+</div>
+</div>
+<p><strong>Residuen</strong></p>
+<p>Kijken naar getallen als mediaan en maximum voor de residuen kan een beetje abstract zijn. Wanneer je de verwachte waarden uitzet tegen de waargenomen waarden krijg je een betere indruk van de kwaliteit van het model.model</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>residuen <span class="ot">&lt;-</span> model<span class="sc">$</span>residuals  <span class="co"># alternatief: residuals(model)</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>waarnemingen <span class="ot">&lt;-</span> trainData<span class="sc">$</span>Ozone</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>verwachtingen <span class="ot">&lt;-</span> model<span class="sc">$</span>fitted.values</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>waardenbereik <span class="ot">&lt;-</span> <span class="fu">range</span>(verwachtingen, waarnemingen)</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(verwachtingen <span class="sc">~</span> waarnemingen,</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlim =</span> waardenbereik, <span class="at">ylim =</span> waardenbereik)</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">col =</span> <span class="st">"red"</span>)</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(waarnemingen, verwachtingen, waarnemingen, verwachtingen<span class="sc">+</span>residuen)</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-aq-residuen" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="voorbeelden_files/figure-html/fig-aq-residuen-1.png" class="img-fluid figure-img" width="576"></p>
+<p></p><figcaption class="figure-caption">Figuur&nbsp;8.13: Verwachte waarden voor trainData op basis van de regressielijn vs de waargenomen waarden, met daarbij de residuen als vertikale lijnstukjes.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout-important callout callout-style-simple">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>In de grafiek is te zien dat er ook negatieve ozonwaarden voorspeld worden. Dit kan natuurlijk niet omdat ozonconcentraties niet onder 0 kunnen komen. In een later stadium zal daarom een beter model gemaakt moeten worden waarbij dat niet gebeurt,</p>
+</div>
+</div>
+</div>
+<p><strong>Coëfficienten</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>model<span class="sc">$</span>coefficients  <span class="co"># alternatief: coefficients(model)</span></span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)     Solar.R        Wind        Temp 
+   -66.0175      0.0739     -3.3171      1.6285 </code></pre>
+</div>
+</div>
+<ul>
+<li><p>De intercept van het model heeft een vrij lage waarde. Dit is de waarde die het model voorspelt wanneer de waarden van alle voorspelvariabelen nul zijn.</p></li>
+<li><p>De lage coëfficiënt voor <code>Solar.R</code> geeft aan dat zonnestraling geen belangrijke rol speelt bij het voorspellen van ozonniveaus, wat niet als een verrassing komt omdat het in de verkennende analyse geen grote correlatie met het ozonniveau liet zien.</p></li>
+<li><p>De coëfficiënt voor <code>Temp</code> geeft aan dat de ozonniveaus hoog zijn als de temperatuur hoog is (er vormt zich dan sneller ozon).</p></li>
+<li><p>De coëfficiënt voor <code>Wind</code> geeft aan dat de ozonniveaus laag zullen zijn voor hogere windsnelheden (de ozon zal dan worden weggeblazen).</p></li>
+</ul>
+<p>De overige waarden die bij de coëfficiënten horen, geven informatie over de statistische zekerheid van de schattingen.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>model.samenvatting<span class="sc">$</span>coefficients</span></code><button title="Kopieer naar klembord" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept) -66.0175    27.4527   -2.40 1.83e-02
+Solar.R       0.0739     0.0284    2.60 1.09e-02
+Wind         -3.3171     0.7500   -4.42 2.84e-05
+Temp          1.6285     0.3065    5.31 8.37e-07</code></pre>
+</div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Voor een verbeterd model zie <span class="citation" data-cites="doringFindingSuitableLinear2018">[<a href="referenties.html#ref-doringFindingSuitableLinear2018" role="doc-biblioref">6</a>]</span></p>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body" role="doc-bibliography" style="display: none">
+<div id="ref-FisherExactTest2022" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>1</strong>. </div><div class="csl-right-inline"><span>‘<a href="https://en.wikipedia.org/w/index.php?title=Fisher%27s_exact_test&amp;oldid=1117572309">Fisher’s Exact Test</a>’</span>, <em>Wikipedia</em>, (2022).</div>
+</div>
+<div id="ref-UnusualObservationsOutlier" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>2</strong>. </div><div class="csl-right-inline"><span>‘<span>Unusual Observations - Outlier, Leverage, and Influential Points</span>’</span>, <a href="https://www.theopeneducator.com/doe/Regression/outlier-leverage-influential-points">https://www.theopeneducator.com/doe/Regression/outlier-leverage-influential-points</a>.</div>
+</div>
+<div id="ref-buijsStatistiekOmMee1991" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>3</strong>. </div><div class="csl-right-inline"><strong>Buijs, A.</strong>, <span>‘<span>Statistiek om mee te werken</span>’</span>, Third dr., <span>Stenfert Kroese</span>, (1991).</div>
+</div>
+<div id="ref-chouldechovaRegressionDiagnosticPlots" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>4</strong>. </div><div class="csl-right-inline"><strong>Chouldechova, A.</strong>, <span>‘Regression Diagnostic Plots’</span>, <a href="https://www.andrew.cmu.edu/user/achoulde/94842/homework/regression_diagnostics.html">https://www.andrew.cmu.edu/user/achoulde/94842/homework/regression_diagnostics.html</a>.</div>
+</div>
+<div id="ref-datacampLinearRegressionTutorial" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>5</strong>. </div><div class="csl-right-inline"><strong>Datacamp</strong>, <span>‘R <span>Linear Regression Tutorial</span>: Lm <span>Function</span> in <span>R</span> with <span>Code Examples</span>’</span>, <a href="https://www.datacamp.com/tutorial/linear-regression-R">https://www.datacamp.com/tutorial/linear-regression-R</a>.</div>
+</div>
+<div id="ref-doringFindingSuitableLinear2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>6</strong>. </div><div class="csl-right-inline"><strong>Döring, M.</strong>, <span>‘Finding a <span>Suitable Linear Model</span> for <span>Ozone Prediction</span>’</span>, <em>Data Science Blog</em>, 2018. <a href="https://www.datascienceblog.net/post/machine-learning/improving_ozone_prediction/">https://www.datascienceblog.net/post/machine-learning/improving_ozone_prediction/</a>.</div>
+</div>
+<div id="ref-doringInterpretingLinearPrediction2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>7</strong>. </div><div class="csl-right-inline"><strong>Döring, M.</strong>, <span>‘Interpreting <span>Linear Prediction Models</span>’</span>, <em>Data Science Blog</em>, 2018. <a href="https://www.datascienceblog.net/post/machine-learning/linear_models/">https://www.datascienceblog.net/post/machine-learning/linear_models/</a>.</div>
+</div>
+<div id="ref-hackerearthBeginnersGuideRegression" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>8</strong>. </div><div class="csl-right-inline"><strong>Hackerearth</strong>, <span>‘Beginners <span>Guide</span> to <span>Regression Analysis</span> and <span>Plot Interpretations</span>’</span>, <a href="https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/beginners-guide-regression-analysis-plot-interpretations/tutorial/">https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/beginners-guide-regression-analysis-plot-interpretations/tutorial/</a>.</div>
+</div>
+<div id="ref-hackerearthPracticalGuideLogistic" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>9</strong>. </div><div class="csl-right-inline"><strong>Hackerearth</strong>, <span>‘Practical <span>Guide</span> to <span>Logistic Regression Analysis</span> in <span>R</span>’</span>, <a href="https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/logistic-regression-analysis-r/tutorial/">https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/logistic-regression-analysis-r/tutorial/</a>.</div>
+</div>
+<div id="ref-kassambaraLogisticRegressionEssentials2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>10</strong>. </div><div class="csl-right-inline"><strong>Kassambara, A.</strong>, <span>‘Logistic <span>Regression Essentials</span> in <span>R</span>’</span>, 2018. <a href="http://www.sthda.com/english/articles/36-classification-methods-essentials/151-logistic-regression-essentials-in-r/">http://www.sthda.com/english/articles/36-classification-methods-essentials/151-logistic-regression-essentials-in-r/</a>.</div>
+</div>
+<div id="ref-kassambaraMachineLearningEssentials2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>11</strong>. </div><div class="csl-right-inline"><strong>Kassambara, A.</strong>, <span>‘Machine <span>Learning Essentials</span>: <span>Practical Guide</span> in <span>R</span>’</span>, 1st edition dr., (2018).</div>
+</div>
+<div id="ref-universityofvirginiaUnderstandingDiagnosticPlots" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin"><strong>12</strong>. </div><div class="csl-right-inline"><strong>University of Virginia</strong>, <span>‘Understanding <span>Diagnostic Plots</span> for <span>Linear Regression Analysis</span> | <span>University</span> of <span>Virginia Library Research Data Services</span> + <span>Sciences</span>’</span>, <a href="https://data.library.virginia.edu/diagnostic-plots/">https://data.library.virginia.edu/diagnostic-plots/</a>.</div>
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Gekopieerd!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Gekopieerd!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          // default icon
+          link.classList.add("external");
+      }
+    }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./logitmodel.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Logistisch model</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./referenties.html" class="pagination-link">
+        <span class="nav-page-text">Referenties</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
